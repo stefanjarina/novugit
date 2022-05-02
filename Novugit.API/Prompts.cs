@@ -57,23 +57,14 @@ public static class Prompts
     }
 
     // GITLAB SPECIFIC
-    public static string AskForGitlabGroup(string user, string userNamespaceId, IEnumerable<string> groups = null)
+    public static string AskForGitlabGroup(IEnumerable<Dictionary<string, string>> groups)
     {
-        var gitlabGroups = new List<Dictionary<string, string>>
-        {
-            new Dictionary<string,string>
-            {
-                {"name", user},
-                {"value", userNamespaceId},
-            },
-        };
-
         var selector = delegate (Dictionary<string, string> dict)
         {
             return dict["name"];
         };
 
-        var group = Prompt.Select("Which group to use?", items: gitlabGroups, textSelector: selector);
+        var group = Prompt.Select("Which group to use?", items: groups, textSelector: selector);
 
         return group["value"];
     }

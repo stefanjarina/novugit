@@ -201,6 +201,32 @@ public class RepoService : IRepoService
 
     private async Task<ProjectInfo> HandleGitlab()
     {
-        throw new System.NotImplementedException();
+        var token = _config.GetValue("gitlab", "token");
+        if (string.IsNullOrEmpty(token))
+        {
+            token = Prompts.AskForToken();
+            _config.UpdateValue("gitlab", "token", token);
+        }
+
+        // fetch remote information
+        var authSpinner = new Spinner("Authenticating and fetching info from Gitlab");
+        authSpinner.Start();
+        _gitlabService.Authenticate();
+        var availableGitignoreConfigs = await _gitignoreService.List();
+        var groups = await _gitlabService.GetGroups();
+        authSpinner.Succeed("Info successfully fetched from Gitlab");
+        
+        var projectInfo = Prompts.AskForProjectInfo(Repos.Gitlab, availableGitignoreConfigs);
+
+        var gitlabGroup = Prompts.AskForGitlabGroup(groups);
+
+        var repoCreationSpinner = new Spinner("Creating repo in Gitlab");
+        repoCreationSpinner.Start();
+        var url = await _gitlabService.CreateRepository(gitlabGroup, projectInfo);
+        repoCreationSpinner.Succeed("Remote repo created");
+
+        projectInfo.RemoteUrl = url;
+
+        return projectInfo;
     }
 }

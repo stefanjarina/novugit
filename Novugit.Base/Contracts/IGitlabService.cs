@@ -1,12 +1,13 @@
 ﻿using Novugit.Base.Models;
+using RestSharp;
 
 namespace Novugit.Base.Contracts;
 
 public interface IGitlabService
 {
     void Authenticate();
-    Task GetInstance();
+    RestClient GetInstance();
     Provider GetStoredProviderInfo();
-    Task<string> CreateRepository(string project, ProjectInfo projectInfo);
-    Task GetGroups();
+    Task<string> CreateRepository(string group, ProjectInfo projectInfo);
+    Task<List<Dictionary<string, string>>> GetGroups();
 }
