@@ -32,6 +32,10 @@ novugit init github
 novugit init github --repo-name myrepo --description "This is my awesome repo"
 ```
 
+## Showcase (from unfinished version)
+
+![novugit_showcase](./novugit_showcase.gif)
+
 ## TODO
 
 - Implement other repositories
