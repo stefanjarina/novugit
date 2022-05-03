@@ -95,6 +95,8 @@ public static class Prompts
     {
         var di = new DirectoryInfo(Environment.CurrentDirectory);
         var files = di.GetFiles().Select(x => x.Name).ToList();
+        var directories = di.GetDirectories().Select(x => x.Name).ToList();
+        var localExcludeList = files.Concat(directories);
 
         var validators = new List<Func<object, ValidationResult>> { Validators.Required() };
         var defaultGitIgnoreConfigs = new[] { "windows", "linux", "macos", "node", "dotnetcore", "visualstudiocode", "webstorm+all" };
@@ -107,7 +109,7 @@ public static class Prompts
             defaultValues: defaultGitIgnoreConfigs,
             minimum: 0,
             pageSize: 10);
-        var excludedLocalFiles = Prompt.MultiSelect("Select the files and/or folders you wish to ignore", items: files, minimum: 0, defaultValues: new[] { "node_modules" });
+        var excludedLocalFiles = Prompt.MultiSelect("Select the files and/or folders you wish to ignore", items: localExcludeList, minimum: 0, defaultValues: new[] { "node_modules" });
 
         var projectInfo = new ProjectInfo
         {

@@ -38,11 +38,20 @@ namespace Novugit.Base
             var provider = GetProvider(providerName);
             if (provider == null) return "";
 
-            return key switch
+            var result = "";
+
+            switch (key)
             {
-                "token" => provider.Token,
-                _ => provider.Options![key] ?? ""
-            };
+                case "token":
+                    result = provider.Token;
+                    break;
+                default:
+                    if (provider.Options.TryGetValue(key, out var value))
+                        result = value;
+                    break;
+            }
+
+            return result;
         }
 
         public void UpdateValue(string providerName, string key, string value)

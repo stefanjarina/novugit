@@ -115,14 +115,9 @@ public class RepoService : IRepoService
 
             // finally push to remote
             spinner.Text = "Local git initialized, attempting to push to remote repository...";
-            if (OperatingSystem.IsWindows() && projectInfo.RemoteUrl.StartsWith("https"))
-            {
-                Helpers.ExecuteCommandAndGetStatus("git", $"push --set-upstream origin {defaultBranch}");
-            }
-            else
-            {
-                localRepo.Network.Push(remote, $"refs/heads/{defaultBranch}");
-            }
+
+            Helpers.ExecuteCommandAndGetStatus("git", $"push --set-upstream origin {defaultBranch}");
+
             spinner.Succeed("Congratulations, repo was initialized and pushed to remote.");
         }
         catch (Exception e)
@@ -215,7 +210,7 @@ public class RepoService : IRepoService
         var availableGitignoreConfigs = await _gitignoreService.List();
         var groups = await _gitlabService.GetGroups();
         authSpinner.Succeed("Info successfully fetched from Gitlab");
-        
+
         var projectInfo = Prompts.AskForProjectInfo(Repos.Gitlab, availableGitignoreConfigs);
 
         var gitlabGroup = Prompts.AskForGitlabGroup(groups);
