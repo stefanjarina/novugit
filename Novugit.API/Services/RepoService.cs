@@ -114,11 +114,9 @@ public class RepoService : IRepoService
             var remote = localRepo.Network.Remotes["origin"];
 
             // finally push to remote
-            spinner.Text = "Local git initialized, attempting to push to remote repository...";
+            spinner.Succeed("Local git initialized, attempting to push to remote repository...");
 
-            Helpers.ExecuteCommandAndGetStatus("git", $"push --set-upstream origin {defaultBranch}");
-
-            spinner.Succeed("Congratulations, repo was initialized and pushed to remote.");
+            Helpers.ExecuteCommandInteractively("git", $"push --set-upstream origin {defaultBranch}", "Are you sure you want to continue connecting (yes/no/[fingerprint])?");
         }
         catch (Exception e)
         {
