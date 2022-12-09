@@ -39,6 +39,9 @@ public class RepoService : IRepoService
 
     public async Task CreateGitIgnoreFile(ProjectInfo projectInfo)
     {
+        if (projectInfo.GitIgnoreConfigs == null && projectInfo.ExcludedLocalFiles == null)
+            return;
+        
         var spinner = new Spinner("Generating '.gitignore' file...");
         spinner.Start();
 
@@ -143,7 +146,7 @@ public class RepoService : IRepoService
         var token = _config.GetValue("azure", "token");
         if (string.IsNullOrEmpty(token))
         {
-            token = Prompts.AskForToken();
+            token = Prompts.AskForToken("Azure");
             _config.UpdateValue("azure", "token", token);
         }
 
@@ -174,7 +177,7 @@ public class RepoService : IRepoService
         var token = _config.GetValue("github", "token");
         if (string.IsNullOrEmpty(token))
         {
-            token = Prompts.AskForToken();
+            token = Prompts.AskForToken("Github");
             _config.UpdateValue("github", "token", token);
         }
 
@@ -202,7 +205,7 @@ public class RepoService : IRepoService
         var token = _config.GetValue("gitlab", "token");
         if (string.IsNullOrEmpty(token))
         {
-            token = Prompts.AskForToken();
+            token = Prompts.AskForToken("Gitlab");
             _config.UpdateValue("gitlab", "token", token);
         }
 

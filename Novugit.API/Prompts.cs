@@ -82,11 +82,11 @@ public static class Prompts
         return visibility;
     }
 
-    public static string AskForToken()
+    public static string AskForToken(string repo)
     {
         var validators = new List<Func<object, ValidationResult>> { Validators.Required() };
 
-        var token = Prompt.Input<string>("Azure Personal Access Token", validators: validators);
+        var token = Prompt.Input<string>($"{repo} Personal Access Token", validators: validators);
 
         return token;
     }
@@ -104,16 +104,26 @@ public static class Prompts
         var name = Prompt.Input<string>("Name", defaultValue: di.Name, validators: validators);
         var description = Prompt.Input<string>("Description (optional)", defaultValue: "");
         var visibility = AskForVisibility(repo);
-        var gitIgnoreConfigs = Prompt.MultiSelect("Select config names you wish to fetch from https://gitignore.io",
-            items: availableGitignoreConfigs,
-            defaultValues: defaultGitIgnoreConfigs,
-            minimum: 0,
-            pageSize: 10);
         
+        IEnumerable<string> gitIgnoreConfigs = Array.Empty<string>();
         IEnumerable<string> excludedLocalFiles = Array.Empty<string>();
         
-        if (localExcludeList.Any())
-           excludedLocalFiles = Prompt.MultiSelect("Select the files and/or folders you wish to ignore", items: localExcludeList, minimum: 0, defaultValues: new[] { "node_modules" });
+        if (files.Count > 0 && files.Contains(".gitignore"))
+        {
+            var answer = Prompt.Confirm("Do you want to use existing .gitignore file?", defaultValue: true);
+            
+            if (!answer)
+            {
+                gitIgnoreConfigs = Prompt.MultiSelect("Select config names you wish to fetch from https://gitignore.io",
+                    items: availableGitignoreConfigs,
+                    defaultValues: defaultGitIgnoreConfigs,
+                    minimum: 0,
+                    pageSize: 10);
+                
+                if (localExcludeList.Any())
+                    excludedLocalFiles = Prompt.MultiSelect("Select the files and/or folders you wish to ignore", items: localExcludeList, minimum: 0, defaultValues: new[] { "node_modules" });
+            }
+        }
 
         var projectInfo = new ProjectInfo
         {
