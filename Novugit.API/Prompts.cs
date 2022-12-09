@@ -109,7 +109,11 @@ public static class Prompts
             defaultValues: defaultGitIgnoreConfigs,
             minimum: 0,
             pageSize: 10);
-        var excludedLocalFiles = Prompt.MultiSelect("Select the files and/or folders you wish to ignore", items: localExcludeList, minimum: 0, defaultValues: new[] { "node_modules" });
+        
+        IEnumerable<string> excludedLocalFiles = Array.Empty<string>();
+        
+        if (localExcludeList.Any())
+           excludedLocalFiles = Prompt.MultiSelect("Select the files and/or folders you wish to ignore", items: localExcludeList, minimum: 0, defaultValues: new[] { "node_modules" });
 
         var projectInfo = new ProjectInfo
         {
