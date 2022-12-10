@@ -107,22 +107,27 @@ public static class Prompts
         
         IEnumerable<string> gitIgnoreConfigs = Array.Empty<string>();
         IEnumerable<string> excludedLocalFiles = Array.Empty<string>();
-        
-        if (files.Count > 0 && files.Contains(".gitignore"))
+
+        var createGitIgnore = true;
+
+        if (files.Contains(".gitignore"))
         {
             var answer = Prompt.Confirm("Do you want to use existing .gitignore file?", defaultValue: true);
-            
-            if (!answer)
-            {
-                gitIgnoreConfigs = Prompt.MultiSelect("Select config names you wish to fetch from https://gitignore.io",
-                    items: availableGitignoreConfigs,
-                    defaultValues: defaultGitIgnoreConfigs,
-                    minimum: 0,
-                    pageSize: 10);
-                
-                if (localExcludeList.Any())
-                    excludedLocalFiles = Prompt.MultiSelect("Select the files and/or folders you wish to ignore", items: localExcludeList, minimum: 0, defaultValues: new[] { "node_modules" });
-            }
+
+            if (answer)
+                createGitIgnore = false;
+        }
+
+        if (createGitIgnore)
+        {
+            gitIgnoreConfigs = Prompt.MultiSelect("Select config names you wish to fetch from https://gitignore.io",
+                items: availableGitignoreConfigs,
+                defaultValues: defaultGitIgnoreConfigs,
+                minimum: 0,
+                pageSize: 10);
+
+            if (localExcludeList.Any())
+                excludedLocalFiles = Prompt.MultiSelect("Select the files and/or folders you wish to ignore", items: localExcludeList, minimum: 0, defaultValues: new[] { "node_modules" });
         }
 
         var projectInfo = new ProjectInfo

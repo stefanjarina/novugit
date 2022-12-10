@@ -58,6 +58,12 @@ public class AzureService : IAzureService
         }
         catch (Exception e)
         {
+            if (e.Message == $"TF400948: A Git repository with the name {projectInfo.Name} already exists.")
+            {
+                Console.WriteLine($"A Git repository with the name {projectInfo.Name} already exists. Exiting...");
+                Environment.Exit(1);
+            }
+            
             Console.WriteLine(e);
             throw;
         }

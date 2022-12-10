@@ -39,7 +39,7 @@ public class RepoService : IRepoService
 
     public async Task CreateGitIgnoreFile(ProjectInfo projectInfo)
     {
-        if (projectInfo.GitIgnoreConfigs == null && projectInfo.ExcludedLocalFiles == null)
+        if (!projectInfo.GitIgnoreConfigs!.Any() && !projectInfo.ExcludedLocalFiles!.Any())
             return;
         
         var spinner = new Spinner("Generating '.gitignore' file...");
