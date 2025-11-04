@@ -3,11 +3,9 @@ using RestSharp;
 
 namespace Novugit.Base.Contracts;
 
-public interface IGitlabService
+public interface IGitlabService : IGitApiService
 {
-    void Authenticate();
     RestClient GetInstance();
-    Provider GetStoredProviderInfo();
     Task<string> CreateRepository(string group, ProjectInfo projectInfo);
-    Task<List<Dictionary<string, string>>> GetGroups();
+    Task<List<Dictionary<string, string>>> GetGroups(string visibility);
 }

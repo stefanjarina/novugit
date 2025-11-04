@@ -10,11 +10,7 @@ public class GitignoreService : IGitignoreService
 
     public GitignoreService()
     {
-        _client = new HttpClient
-        {
-            BaseAddress = new Uri(BaseUrl),
-            Timeout = TimeSpan.FromSeconds(10),
-        };
+        _client = new HttpClient { BaseAddress = new Uri(BaseUrl), Timeout = TimeSpan.FromSeconds(10), };
     }
 
     public async Task<IEnumerable<string>> List()

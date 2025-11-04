@@ -3,10 +3,9 @@ using Octokit;
 
 namespace Novugit.Base.Contracts;
 
-public interface IGithubService
+public interface IGithubService : IGitApiService
 {
-    void Authenticate();
     GitHubClient GetInstance();
-    Provider GetStoredProviderInfo();
+    void Authenticate();
     Task<string> CreateRepository(ProjectInfo projectInfo);
 }

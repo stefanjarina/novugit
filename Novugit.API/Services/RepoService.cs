@@ -15,7 +15,8 @@ public class RepoService : IRepoService
     private readonly IGithubService _githubService;
     private readonly IGitlabService _gitlabService;
 
-    public RepoService(IConfiguration config, IGitignoreService gitignoreService, IAzureService azureService, IGithubService githubService, IGitlabService gitlabService)
+    public RepoService(IConfiguration config, IGitignoreService gitignoreService, IAzureService azureService,
+        IGithubService githubService, IGitlabService gitlabService)
     {
         _config = config;
         _gitignoreService = gitignoreService;
@@ -41,7 +42,7 @@ public class RepoService : IRepoService
     {
         if (!projectInfo.GitIgnoreConfigs!.Any() && !projectInfo.ExcludedLocalFiles!.Any())
             return;
-        
+
         var spinner = new Spinner("Generating '.gitignore' file...");
         spinner.Start();
 
@@ -52,7 +53,8 @@ public class RepoService : IRepoService
             if (projectInfo.ExcludedLocalFiles != null && projectInfo.ExcludedLocalFiles!.Any())
             {
                 gitignoreString += "# CUSTOM SETTINGS\n\n";
-                gitignoreString = projectInfo.ExcludedLocalFiles.Aggregate(gitignoreString, (current, excludedLocalFile) => current + excludedLocalFile);
+                gitignoreString = projectInfo.ExcludedLocalFiles.Aggregate(gitignoreString,
+                    (current, excludedLocalFile) => current + excludedLocalFile);
                 gitignoreString += "\n";
             }
 
@@ -97,12 +99,6 @@ public class RepoService : IRepoService
 
             var defaultBranch = _config.Config.DefaultBranch;
 
-            // master => main
-            if (defaultBranch != "master")
-            {
-                Helpers.ExecuteCommandAndGetStatus("git", $"branch -m master {defaultBranch}");
-            }
-
             // get git configuration
             var config = localRepo.Config;
             var author = config.BuildSignature(DateTimeOffset.Now);
@@ -119,7 +115,8 @@ public class RepoService : IRepoService
             // finally push to remote
             spinner.Succeed("Local git initialized, attempting to push to remote repository...");
 
-            var pushResult = Helpers.ExecuteCommandInteractively("git", $"push --set-upstream origin {defaultBranch}", "Are you sure you want to continue connecting (yes/no/[fingerprint])?");
+            var pushResult = Helpers.ExecuteCommandInteractively("git", $"push --set-upstream origin {defaultBranch}",
+                "Are you sure you want to continue connecting (yes/no/[fingerprint])?");
 
             if (pushResult)
             {
@@ -190,7 +187,7 @@ public class RepoService : IRepoService
 
         var projectInfo = Prompts.AskForProjectInfo(Repos.Azure, availableGitignoreConfigs);
 
-        var repoCreationSpinner = new Spinner("Creating repo in Azure DevOps");
+        var repoCreationSpinner = new Spinner("Creating repo on Github");
         repoCreationSpinner.Start();
         var url = await _githubService.CreateRepository(projectInfo);
         repoCreationSpinner.Succeed("Remote repo created");
@@ -212,16 +209,19 @@ public class RepoService : IRepoService
         // fetch remote information
         var authSpinner = new Spinner("Authenticating and fetching info from Gitlab");
         authSpinner.Start();
-        _gitlabService.Authenticate();
         var availableGitignoreConfigs = await _gitignoreService.List();
-        var groups = await _gitlabService.GetGroups();
         authSpinner.Succeed("Info successfully fetched from Gitlab");
 
         var projectInfo = Prompts.AskForProjectInfo(Repos.Gitlab, availableGitignoreConfigs);
 
+        var groupsSpinner = new Spinner("Fetching info about groups from Gitlab based on project visibility");
+        groupsSpinner.Start();
+        var groups = await _gitlabService.GetGroups(projectInfo.Visibility);
+        groupsSpinner.Succeed("Info successfully fetched from Gitlab");
+
         var gitlabGroup = Prompts.AskForGitlabGroup(groups);
 
-        var repoCreationSpinner = new Spinner("Creating repo in Gitlab");
+        var repoCreationSpinner = new Spinner("Creating repo on Gitlab");
         repoCreationSpinner.Start();
         var url = await _gitlabService.CreateRepository(gitlabGroup, projectInfo);
         repoCreationSpinner.Succeed("Remote repo created");

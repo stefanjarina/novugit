@@ -4,27 +4,19 @@ namespace Novugit.Base.Models.Gitlab;
 
 public class Links
 {
-    [JsonPropertyName("self")]
-    public string Self { get; set; }
+    [JsonPropertyName("self")] public string Self { get; set; }
 
-    [JsonPropertyName("issues")]
-    public string Issues { get; set; }
+    [JsonPropertyName("issues")] public string Issues { get; set; }
 
-    [JsonPropertyName("merge_requests")]
-    public string MergeRequests { get; set; }
+    [JsonPropertyName("merge_requests")] public string MergeRequests { get; set; }
 
-    [JsonPropertyName("repo_branches")]
-    public string RepoBranches { get; set; }
+    [JsonPropertyName("repo_branches")] public string RepoBranches { get; set; }
 
-    [JsonPropertyName("labels")]
-    public string Labels { get; set; }
+    [JsonPropertyName("labels")] public string Labels { get; set; }
 
-    [JsonPropertyName("events")]
-    public string Events { get; set; }
+    [JsonPropertyName("events")] public string Events { get; set; }
 
-    [JsonPropertyName("members")]
-    public string Members { get; set; }
+    [JsonPropertyName("members")] public string Members { get; set; }
 
-    [JsonPropertyName("cluster_agents")]
-    public string ClusterAgents { get; set; }
+    [JsonPropertyName("cluster_agents")] public string ClusterAgents { get; set; }
 }

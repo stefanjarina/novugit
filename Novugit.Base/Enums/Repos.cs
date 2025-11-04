@@ -1,9 +1,8 @@
-﻿namespace Novugit.Base.Enums
+﻿namespace Novugit.Base.Enums;
+
+public enum Repos
 {
-    public enum Repos
-    {
-        Azure,
-        Github,
-        Gitlab
-    }
+    Azure,
+    Github,
+    Gitlab
 }

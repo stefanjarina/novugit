@@ -1,6 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+
+using Novugit.Base;
 using Novugit.Base.Enums;
 using Novugit.Base.Models;
+
 using Sharprompt;
 
 namespace Novugit.API;
@@ -93,30 +96,47 @@ public static class Prompts
 
     public static ProjectInfo AskForProjectInfo(Repos repo, IEnumerable<string> availableGitignoreConfigs)
     {
-        var di = new DirectoryInfo(Environment.CurrentDirectory);
-        var files = di.GetFiles().Select(x => x.Name).ToList();
-        var directories = di.GetDirectories().Select(x => x.Name).ToList();
-        var localExcludeList = files.Concat(directories);
+        var currentDirectoryInfo = Helpers.GetCurrentDirInfo();
 
         var validators = new List<Func<object, ValidationResult>> { Validators.Required() };
         var defaultGitIgnoreConfigs = new[] { "windows", "linux", "macos", "node", "dotnetcore", "visualstudiocode", "webstorm+all" };
 
-        var name = Prompt.Input<string>("Name", defaultValue: di.Name, validators: validators);
+        var name = Prompt.Input<string>("Name", defaultValue: currentDirectoryInfo.Name, validators: validators);
         var description = Prompt.Input<string>("Description (optional)", defaultValue: "");
         var visibility = AskForVisibility(repo);
-        
+
+        var (gitIgnoreConfigs, excludedLocalFiles) = AskForGitignoreDetails(currentDirectoryInfo, availableGitignoreConfigs);
+
+        var projectInfo = new ProjectInfo
+        {
+            Name = name,
+            Description = description,
+            Visibility = visibility,
+            GitIgnoreConfigs = gitIgnoreConfigs,
+            ExcludedLocalFiles = excludedLocalFiles
+        };
+
+        return projectInfo;
+    }
+
+    public static (IEnumerable<string>, IEnumerable<string>) AskForGitignoreDetails(CurrentDirectoryInfo currentDirectoryInfo, IEnumerable<string> availableGitignoreConfigs)
+    {
+        var localExcludeList = currentDirectoryInfo.Files.Concat(currentDirectoryInfo.Directories);
+
         IEnumerable<string> gitIgnoreConfigs = Array.Empty<string>();
         IEnumerable<string> excludedLocalFiles = Array.Empty<string>();
 
         var createGitIgnore = true;
 
-        if (files.Contains(".gitignore"))
+        if (currentDirectoryInfo.Files.Contains(".gitignore"))
         {
             var answer = Prompt.Confirm("Do you want to use existing .gitignore file?", defaultValue: true);
 
             if (answer)
                 createGitIgnore = false;
         }
+
+        var defaultGitIgnoreConfigs = new[] { "windows", "linux", "macos", "node", "dotnetcore", "visualstudiocode", "webstorm+all" };
 
         if (createGitIgnore)
         {
@@ -130,15 +150,6 @@ public static class Prompts
                 excludedLocalFiles = Prompt.MultiSelect("Select the files and/or folders you wish to ignore", items: localExcludeList, minimum: 0, defaultValues: new[] { "node_modules" });
         }
 
-        var projectInfo = new ProjectInfo
-        {
-            Name = name,
-            Description = description,
-            Visibility = visibility,
-            GitIgnoreConfigs = gitIgnoreConfigs,
-            ExcludedLocalFiles = excludedLocalFiles
-        };
-
-        return projectInfo;
+        return (gitIgnoreConfigs, excludedLocalFiles);
     }
 }

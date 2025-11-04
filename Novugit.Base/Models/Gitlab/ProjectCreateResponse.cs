@@ -4,83 +4,60 @@ namespace Novugit.Base.Models.Gitlab;
 
 public class ProjectCreateResponse
 {
-    [JsonPropertyName("id")]
-    public int Id { get; set; }
+    [JsonPropertyName("id")] public int Id { get; set; }
 
-    [JsonPropertyName("description")]
-    public string Description { get; set; }
+    [JsonPropertyName("description")] public string Description { get; set; }
 
-    [JsonPropertyName("name")]
-    public string Name { get; set; }
+    [JsonPropertyName("name")] public string Name { get; set; }
 
     [JsonPropertyName("name_with_namespace")]
     public string NameWithNamespace { get; set; }
 
-    [JsonPropertyName("path")]
-    public string Path { get; set; }
+    [JsonPropertyName("path")] public string Path { get; set; }
 
     [JsonPropertyName("path_with_namespace")]
     public string PathWithNamespace { get; set; }
 
-    [JsonPropertyName("created_at")]
-    public DateTime? CreatedAt { get; set; }
+    [JsonPropertyName("created_at")] public DateTime? CreatedAt { get; set; }
 
-    [JsonPropertyName("default_branch")]
-    public string DefaultBranch { get; set; }
+    [JsonPropertyName("default_branch")] public string DefaultBranch { get; set; }
 
-    [JsonPropertyName("tag_list")]
-    public List<object> TagList { get; set; }
+    [JsonPropertyName("tag_list")] public List<object> TagList { get; set; }
 
-    [JsonPropertyName("topics")]
-    public List<object> Topics { get; set; }
+    [JsonPropertyName("topics")] public List<object> Topics { get; set; }
 
-    [JsonPropertyName("ssh_url_to_repo")]
-    public string SshUrlToRepo { get; set; }
+    [JsonPropertyName("ssh_url_to_repo")] public string SshUrlToRepo { get; set; }
 
-    [JsonPropertyName("http_url_to_repo")]
-    public string HttpUrlToRepo { get; set; }
+    [JsonPropertyName("http_url_to_repo")] public string HttpUrlToRepo { get; set; }
 
-    [JsonPropertyName("web_url")]
-    public string WebUrl { get; set; }
+    [JsonPropertyName("web_url")] public string WebUrl { get; set; }
 
-    [JsonPropertyName("readme_url")]
-    public object ReadmeUrl { get; set; }
+    [JsonPropertyName("readme_url")] public object ReadmeUrl { get; set; }
 
-    [JsonPropertyName("avatar_url")]
-    public object AvatarUrl { get; set; }
+    [JsonPropertyName("avatar_url")] public object AvatarUrl { get; set; }
 
-    [JsonPropertyName("forks_count")]
-    public int? ForksCount { get; set; }
+    [JsonPropertyName("forks_count")] public int? ForksCount { get; set; }
 
-    [JsonPropertyName("star_count")]
-    public int? StarCount { get; set; }
+    [JsonPropertyName("star_count")] public int? StarCount { get; set; }
 
-    [JsonPropertyName("last_activity_at")]
-    public DateTime? LastActivityAt { get; set; }
+    [JsonPropertyName("last_activity_at")] public DateTime? LastActivityAt { get; set; }
 
-    [JsonPropertyName("namespace")]
-    public Namespace Namespace { get; set; }
+    [JsonPropertyName("namespace")] public Namespace Namespace { get; set; }
 
     [JsonPropertyName("container_registry_image_prefix")]
     public string ContainerRegistryImagePrefix { get; set; }
 
-    [JsonPropertyName("_links")]
-    public Links Links { get; set; }
+    [JsonPropertyName("_links")] public Links Links { get; set; }
 
-    [JsonPropertyName("packages_enabled")]
-    public bool? PackagesEnabled { get; set; }
+    [JsonPropertyName("packages_enabled")] public bool? PackagesEnabled { get; set; }
 
-    [JsonPropertyName("empty_repo")]
-    public bool? EmptyRepo { get; set; }
+    [JsonPropertyName("empty_repo")] public bool? EmptyRepo { get; set; }
 
-    [JsonPropertyName("archived")]
-    public bool? Archived { get; set; }
+    [JsonPropertyName("archived")] public bool? Archived { get; set; }
 
-    [JsonPropertyName("visibility")]
-    public string Visibility { get; set; }
+    [JsonPropertyName("visibility")] public string Visibility { get; set; }
 
-    [JsonPropertyName("owner")]
-    public Owner Owner { get; set; }
+    [JsonPropertyName("owner")] public Owner Owner { get; set; }
 
     [JsonPropertyName("resolve_outdated_diff_discussions")]
     public bool? ResolveOutdatedDiffDiscussions { get; set; }
@@ -88,20 +65,16 @@ public class ProjectCreateResponse
     [JsonPropertyName("container_expiration_policy")]
     public ContainerExpirationPolicy ContainerExpirationPolicy { get; set; }
 
-    [JsonPropertyName("issues_enabled")]
-    public bool? IssuesEnabled { get; set; }
+    [JsonPropertyName("issues_enabled")] public bool? IssuesEnabled { get; set; }
 
     [JsonPropertyName("merge_requests_enabled")]
     public bool? MergeRequestsEnabled { get; set; }
 
-    [JsonPropertyName("wiki_enabled")]
-    public bool? WikiEnabled { get; set; }
+    [JsonPropertyName("wiki_enabled")] public bool? WikiEnabled { get; set; }
 
-    [JsonPropertyName("jobs_enabled")]
-    public bool? JobsEnabled { get; set; }
+    [JsonPropertyName("jobs_enabled")] public bool? JobsEnabled { get; set; }
 
-    [JsonPropertyName("snippets_enabled")]
-    public bool? SnippetsEnabled { get; set; }
+    [JsonPropertyName("snippets_enabled")] public bool? SnippetsEnabled { get; set; }
 
     [JsonPropertyName("container_registry_enabled")]
     public bool? ContainerRegistryEnabled { get; set; }
@@ -151,35 +124,27 @@ public class ProjectCreateResponse
     [JsonPropertyName("security_and_compliance_access_level")]
     public string SecurityAndComplianceAccessLevel { get; set; }
 
-    [JsonPropertyName("emails_disabled")]
-    public object EmailsDisabled { get; set; }
+    [JsonPropertyName("emails_disabled")] public object EmailsDisabled { get; set; }
 
     [JsonPropertyName("shared_runners_enabled")]
     public bool? SharedRunnersEnabled { get; set; }
 
-    [JsonPropertyName("lfs_enabled")]
-    public bool? LfsEnabled { get; set; }
+    [JsonPropertyName("lfs_enabled")] public bool? LfsEnabled { get; set; }
 
-    [JsonPropertyName("creator_id")]
-    public int? CreatorId { get; set; }
+    [JsonPropertyName("creator_id")] public int? CreatorId { get; set; }
 
-    [JsonPropertyName("import_url")]
-    public object ImportUrl { get; set; }
+    [JsonPropertyName("import_url")] public object ImportUrl { get; set; }
 
-    [JsonPropertyName("import_type")]
-    public object ImportType { get; set; }
+    [JsonPropertyName("import_type")] public object ImportType { get; set; }
 
-    [JsonPropertyName("import_status")]
-    public string ImportStatus { get; set; }
+    [JsonPropertyName("import_status")] public string ImportStatus { get; set; }
 
-    [JsonPropertyName("import_error")]
-    public object ImportError { get; set; }
+    [JsonPropertyName("import_error")] public object ImportError { get; set; }
 
     [JsonPropertyName("open_issues_count")]
     public int? OpenIssuesCount { get; set; }
 
-    [JsonPropertyName("runners_token")]
-    public string RunnersToken { get; set; }
+    [JsonPropertyName("runners_token")] public string RunnersToken { get; set; }
 
     [JsonPropertyName("ci_default_git_depth")]
     public int? CiDefaultGitDepth { get; set; }
@@ -190,20 +155,17 @@ public class ProjectCreateResponse
     [JsonPropertyName("ci_job_token_scope_enabled")]
     public bool? CiJobTokenScopeEnabled { get; set; }
 
-    [JsonPropertyName("public_jobs")]
-    public bool? PublicJobs { get; set; }
+    [JsonPropertyName("public_jobs")] public bool? PublicJobs { get; set; }
 
     [JsonPropertyName("build_git_strategy")]
     public string BuildGitStrategy { get; set; }
 
-    [JsonPropertyName("build_timeout")]
-    public int? BuildTimeout { get; set; }
+    [JsonPropertyName("build_timeout")] public int? BuildTimeout { get; set; }
 
     [JsonPropertyName("auto_cancel_pending_pipelines")]
     public string AutoCancelPendingPipelines { get; set; }
 
-    [JsonPropertyName("ci_config_path")]
-    public string CiConfigPath { get; set; }
+    [JsonPropertyName("ci_config_path")] public string CiConfigPath { get; set; }
 
     [JsonPropertyName("shared_with_groups")]
     public List<object> SharedWithGroups { get; set; }
@@ -229,11 +191,9 @@ public class ProjectCreateResponse
     [JsonPropertyName("printing_merge_request_link_enabled")]
     public bool? PrintingMergeRequestLinkEnabled { get; set; }
 
-    [JsonPropertyName("merge_method")]
-    public string MergeMethod { get; set; }
+    [JsonPropertyName("merge_method")] public string MergeMethod { get; set; }
 
-    [JsonPropertyName("squash_option")]
-    public string SquashOption { get; set; }
+    [JsonPropertyName("squash_option")] public string SquashOption { get; set; }
 
     [JsonPropertyName("suggestion_commit_message")]
     public object SuggestionCommitMessage { get; set; }

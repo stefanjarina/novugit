@@ -44,11 +44,7 @@ public class AzureService : IAzureService
 
         var projectReference = await projectClient.GetProject(project);
 
-        var data = new GitRepositoryCreateOptions
-        {
-            Name = projectInfo.Name,
-            ProjectReference = projectReference
-        };
+        var data = new GitRepositoryCreateOptions { Name = projectInfo.Name, ProjectReference = projectReference };
 
         try
         {
@@ -63,7 +59,7 @@ public class AzureService : IAzureService
                 Console.WriteLine($"A Git repository with the name {projectInfo.Name} already exists. Exiting...");
                 Environment.Exit(1);
             }
-            
+
             Console.WriteLine(e);
             throw;
         }

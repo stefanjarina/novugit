@@ -37,8 +37,7 @@ public class GithubService : IGithubService
     {
         var newRepository = new NewRepository(projectInfo.Name)
         {
-            Description = projectInfo.Description,
-            Private = projectInfo.Visibility == "private",
+            Description = projectInfo.Description, Private = projectInfo.Visibility == "private",
         };
 
         try

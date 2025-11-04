@@ -14,23 +14,16 @@ public class GitlabService : IGitlabService
     public GitlabService(IConfiguration config)
     {
         _config = config;
-        
+
         var provider = GetStoredProviderInfo();
 
         var baseUrl = provider.BaseUrl.EndsWith("/") ? $"{provider.BaseUrl}api/v4/" : $"{provider.BaseUrl}/api/v4/";
 
         var options = new RestClientOptions(baseUrl)
         {
-            ThrowOnDeserializationError = true,
+            ThrowOnDeserializationError = true, Authenticator = new JwtAuthenticator(provider.Token)
         };
         _client = new RestClient(options);
-    }
-
-    public void Authenticate()
-    {
-        var provider = GetStoredProviderInfo();
-
-        _client.Authenticator = new JwtAuthenticator(provider.Token);
     }
 
     public RestClient GetInstance()
@@ -67,30 +60,27 @@ public class GitlabService : IGitlabService
         }
     }
 
-    public async Task<List<Dictionary<string, string>>> GetGroups()
+    public async Task<List<Dictionary<string, string>>> GetGroups(string visibility)
     {
         try
         {
             // get user
-            var user = await _client.GetJsonAsync<User>("user");
+            var user = await _client.GetAsync<User>("user");
             // get main user namespace
-            var ns = await _client.GetJsonAsync<List<Namespace>>($"namespaces?search={user?.Name}");
+            var ns = await _client.GetAsync<List<Namespace>>($"namespaces?search={user?.Name}");
             var userNamespaceId = ns?.First().Id.ToString();
             // get groups and subgroups
-            var groups = await _client.GetJsonAsync<List<Group>>("groups");
-            
+            var groups = await _client.GetAsync<List<Group>>($"groups?visibility={visibility}");
+
             var gitlabGroups = new List<Dictionary<string, string>>
             {
-                new Dictionary<string,string>
-                {
-                    {"name", user?.Name},
-                    {"value", userNamespaceId},
-                },
+                new Dictionary<string, string> { { "name", user?.Name }, { "value", userNamespaceId }, },
             };
 
-            if (groups != null && groups.Count > 0)
+            if (groups is { Count: > 0 })
             {
-                gitlabGroups.AddRange(groups!.Select(group => new Dictionary<string, string> { { "name", group.Name }, { "value", group.Id.ToString() }, }));
+                gitlabGroups.AddRange(groups!.Select(group =>
+                    new Dictionary<string, string> { { "name", group.Name }, { "value", group.Id.ToString() }, }));
             }
 
             return gitlabGroups;
