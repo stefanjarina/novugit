@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using Novugit.Base.Models;
 using Novugit.Base.Contracts;
 using Novugit.Base.Enums;
+using Novugit.Base.Models;
 using YamlDotNet.Serialization;
 
 namespace Novugit.Base;
@@ -30,7 +30,7 @@ public class Configuration : IConfiguration
 
     public Provider GetProvider(Repos repo)
     {
-        return Config.Providers.Find(x => x.Name == repo.ToString().ToLower());
+        return Config.Providers.Find(x => x.Name.Equals(repo.ToString(), StringComparison.InvariantCultureIgnoreCase));
     }
 
     public string GetValue(string providerName, string key)
@@ -112,12 +112,10 @@ public class Configuration : IConfiguration
         var homePath = Environment.OSVersion.Platform is PlatformID.Unix or PlatformID.MacOSX
             ? Environment.GetEnvironmentVariable("HOME")
             : Environment.ExpandEnvironmentVariables("%HOMEDRIVE%%HOMEPATH%");
-        if (homePath == null)
-        {
-            homePath = Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName);
-        }
 
-        return Path.Combine(homePath, ".config", "novugit", "config.yml");
+        homePath ??= Path.GetDirectoryName(System.Diagnostics.Process.GetCurrentProcess().MainModule?.FileName);
+
+        return Path.Combine(homePath!, ".config", "novugit", "config.yml");
     }
 
     private void CreateEmptyConfig()
@@ -129,9 +127,9 @@ public class Configuration : IConfiguration
 
         var providers = new List<Provider>
         {
-            new Provider { Name = "azure", Token = "", BaseUrl = "https://dev.azure.com" },
-            new Provider { Name = "github", Token = "", BaseUrl = "https://github.com" },
-            new Provider { Name = "gitlab", Token = "", BaseUrl = "https://gitlab.com" }
+            new() { Name = "azure", Token = "", BaseUrl = "https://dev.azure.com" },
+            new() { Name = "github", Token = "", BaseUrl = "https://github.com" },
+            new() { Name = "gitlab", Token = "", BaseUrl = "https://gitlab.com" }
         };
 
         Config = new Config { DefaultBranch = "main", Providers = providers };

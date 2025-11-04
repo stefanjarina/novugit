@@ -30,14 +30,11 @@ public static class Helpers
             return false;
         }
 
-        var stdOut = process.StandardOutput.ReadToEnd();
+        _ = process.StandardOutput.ReadToEnd();
         var stdErr = process.StandardError.ReadToEnd();
         process.WaitForExit();
 
-        if (process.ExitCode == 0)
-            return true;
-
-        throw new Exception(stdErr);
+        return process.ExitCode == 0 ? true : throw new Exception(stdErr);
     }
 
     public static bool ExecuteCommandInteractively(string cmdName, string args, string inputDetectionString,
@@ -60,7 +57,7 @@ public static class Helpers
             }
             else
             {
-                var userInput = Console.ReadLine();
+                var userInput = Console.ReadLine() ?? "";
                 process.StandardInput.WriteLine(userInput.Trim());
             }
         }
@@ -68,10 +65,7 @@ public static class Helpers
         var stdErr = process.StandardError.ReadToEnd();
         process.WaitForExit();
 
-        if (process.ExitCode == 0)
-            return true;
-
-        throw new Exception(stdErr);
+        return process.ExitCode == 0 ? true : throw new Exception(stdErr);
     }
 
     private static Process CreateControlledProcess(string cmdName, string args)
@@ -89,16 +83,8 @@ public static class Helpers
 
     private static void StartupControlledProcess(Process process)
     {
-        if (process.Start())
-        {
-            if (OperatingSystem.IsWindows())
-            {
-                process.StandardInput.NewLine = "\r\n";
-            }
-            else
-            {
-                process.StandardInput.NewLine = "\n";
-            }
-        }
+        if (!process.Start()) return;
+
+        process.StandardInput.NewLine = OperatingSystem.IsWindows() ? "\r\n" : "\n";
     }
 }

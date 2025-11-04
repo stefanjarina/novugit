@@ -7,7 +7,7 @@ namespace Novugit.API.Services;
 public class GithubService : IGithubService
 {
     private readonly IConfiguration _config;
-    private GitHubClient _client;
+    private readonly GitHubClient _client;
 
     public GithubService(IConfiguration config)
     {
@@ -19,8 +19,8 @@ public class GithubService : IGithubService
     {
         var provider = GetStoredProviderInfo();
 
-        var creds = new Credentials(provider.Token);
-        _client.Credentials = creds;
+        var credentials = new Credentials(provider.Token);
+        _client.Credentials = credentials;
     }
 
     public GitHubClient GetInstance()
@@ -37,7 +37,8 @@ public class GithubService : IGithubService
     {
         var newRepository = new NewRepository(projectInfo.Name)
         {
-            Description = projectInfo.Description, Private = projectInfo.Visibility == "private",
+            Description = projectInfo.Description,
+            Private = projectInfo.Visibility == "private",
         };
 
         try

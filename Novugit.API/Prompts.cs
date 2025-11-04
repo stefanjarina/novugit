@@ -22,14 +22,14 @@ public static class Prompts
 
     public static string AskForAzureProject(IEnumerable<Dictionary<string, object>> projects)
     {
-        var selector = delegate (Dictionary<string, object> dict)
-        {
-            return dict["name"].ToString();
-        };
-
-        var project = Prompt.Select("Which project to use?", items: projects, textSelector: selector);
+        var project = Prompt.Select("Which project to use?", items: projects, textSelector: Selector);
 
         return project["id"].ToString();
+
+        string Selector(Dictionary<string, object> dict)
+        {
+            return dict["name"].ToString();
+        }
     }
 
     // GITHUB SPECIFIC
@@ -62,14 +62,14 @@ public static class Prompts
     // GITLAB SPECIFIC
     public static string AskForGitlabGroup(IEnumerable<Dictionary<string, string>> groups)
     {
-        var selector = delegate (Dictionary<string, string> dict)
-        {
-            return dict["name"];
-        };
-
-        var group = Prompt.Select("Which group to use?", items: groups, textSelector: selector);
+        var group = Prompt.Select("Which group to use?", items: groups, textSelector: Selector);
 
         return group["value"];
+        
+        string Selector(Dictionary<string, string> dict)
+        {
+            return dict["name"];
+        }
     }
 
     // GENERAL
@@ -80,7 +80,7 @@ public static class Prompts
         if (repo == Repos.Gitlab)
             visibilityOptions = new[] { "private", "internal", "public" };
 
-        var visibility = Prompt.Select<string>("Visibility of a repository", items: visibilityOptions, defaultValue: "public");
+        var visibility = Prompt.Select("Visibility of a repository", items: visibilityOptions, defaultValue: "public");
 
         return visibility;
     }
@@ -99,7 +99,6 @@ public static class Prompts
         var currentDirectoryInfo = Helpers.GetCurrentDirInfo();
 
         var validators = new List<Func<object, ValidationResult>> { Validators.Required() };
-        var defaultGitIgnoreConfigs = new[] { "windows", "linux", "macos", "node", "dotnetcore", "visualstudiocode", "webstorm+all" };
 
         var name = Prompt.Input<string>("Name", defaultValue: currentDirectoryInfo.Name, validators: validators);
         var description = Prompt.Input<string>("Description (optional)", defaultValue: "");
@@ -121,7 +120,7 @@ public static class Prompts
 
     public static (IEnumerable<string>, IEnumerable<string>) AskForGitignoreDetails(CurrentDirectoryInfo currentDirectoryInfo, IEnumerable<string> availableGitignoreConfigs)
     {
-        var localExcludeList = currentDirectoryInfo.Files.Concat(currentDirectoryInfo.Directories);
+        var localExcludeList = currentDirectoryInfo.Files.Concat(currentDirectoryInfo.Directories).ToList();
 
         IEnumerable<string> gitIgnoreConfigs = Array.Empty<string>();
         IEnumerable<string> excludedLocalFiles = Array.Empty<string>();
@@ -146,7 +145,7 @@ public static class Prompts
                 minimum: 0,
                 pageSize: 10);
 
-            if (localExcludeList.Any())
+            if (localExcludeList.Count != 0)
                 excludedLocalFiles = Prompt.MultiSelect("Select the files and/or folders you wish to ignore", items: localExcludeList, minimum: 0, defaultValues: new[] { "node_modules" });
         }
 

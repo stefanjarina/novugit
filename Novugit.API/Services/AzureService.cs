@@ -22,9 +22,9 @@ public class AzureService : IAzureService
     {
         var provider = GetStoredProviderInfo();
 
-        var creds = new VssBasicCredential(string.Empty, provider.Token);
+        var credentials = new VssBasicCredential(string.Empty, provider.Token);
 
-        _connection = new VssConnection(new Uri($"{provider.BaseUrl}/{provider.Options["OrgName"]}"), creds);
+        _connection = new VssConnection(new Uri($"{provider.BaseUrl}/{provider.Options["OrgName"]}"), credentials);
     }
 
     public VssConnection GetInstance()
@@ -72,9 +72,11 @@ public class AzureService : IAzureService
 
         var projects = result.Select(x =>
         {
-            var dict = new Dictionary<string, object>();
-            dict.Add("name", x.Name);
-            dict.Add("id", x.Id);
+            var dict = new Dictionary<string, object>
+            {
+                { "name", x.Name },
+                { "id", x.Id }
+            };
 
             return dict;
         });

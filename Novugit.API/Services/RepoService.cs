@@ -64,7 +64,7 @@ public class RepoService : IRepoService
                 gitignoreString += await _gitignoreService.FetchConfig(projectInfo.GitIgnoreConfigs);
             }
 
-            File.WriteAllText(@".gitignore", gitignoreString);
+            await File.WriteAllTextAsync(@".gitignore", gitignoreString);
         }
         catch (Exception e)
         {
@@ -110,7 +110,7 @@ public class RepoService : IRepoService
 
             // configure remote
             localRepo.Network.Remotes.Add("origin", projectInfo.RemoteUrl);
-            var remote = localRepo.Network.Remotes["origin"];
+            _ = localRepo.Network.Remotes["origin"];
 
             // finally push to remote
             spinner.Succeed("Local git initialized, attempting to push to remote repository...");

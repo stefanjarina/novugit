@@ -9,7 +9,7 @@ namespace Novugit.API.Services;
 public class GitlabService : IGitlabService
 {
     private readonly IConfiguration _config;
-    private RestClient _client;
+    private readonly RestClient _client;
 
     public GitlabService(IConfiguration config)
     {
@@ -17,11 +17,12 @@ public class GitlabService : IGitlabService
 
         var provider = GetStoredProviderInfo();
 
-        var baseUrl = provider.BaseUrl.EndsWith("/") ? $"{provider.BaseUrl}api/v4/" : $"{provider.BaseUrl}/api/v4/";
+        var baseUrl = provider.BaseUrl.EndsWith('/') ? $"{provider.BaseUrl}api/v4/" : $"{provider.BaseUrl}/api/v4/";
 
         var options = new RestClientOptions(baseUrl)
         {
-            ThrowOnDeserializationError = true, Authenticator = new JwtAuthenticator(provider.Token)
+            ThrowOnDeserializationError = true,
+            Authenticator = new JwtAuthenticator(provider.Token)
         };
         _client = new RestClient(options);
     }
@@ -74,7 +75,7 @@ public class GitlabService : IGitlabService
 
             var gitlabGroups = new List<Dictionary<string, string>>
             {
-                new Dictionary<string, string> { { "name", user?.Name }, { "value", userNamespaceId }, },
+                new() { { "name", user?.Name }, { "value", userNamespaceId }, },
             };
 
             if (groups is { Count: > 0 })

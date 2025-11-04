@@ -5,13 +5,8 @@ namespace Novugit.API.Services;
 
 public class GitignoreService : IGitignoreService
 {
-    private const string BaseUrl = "https://www.toptal.com/developers/gitignore/api/";
-    private HttpClient _client;
-
-    public GitignoreService()
-    {
-        _client = new HttpClient { BaseAddress = new Uri(BaseUrl), Timeout = TimeSpan.FromSeconds(10), };
-    }
+    private const string _baseUrl = "https://www.toptal.com/developers/gitignore/api/";
+    private readonly HttpClient _client = new() { BaseAddress = new Uri(_baseUrl), Timeout = TimeSpan.FromSeconds(10), };
 
     public async Task<IEnumerable<string>> List()
     {
