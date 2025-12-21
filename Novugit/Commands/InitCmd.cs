@@ -27,6 +27,7 @@ public class InitCmd : RepoArgBase
         var projectInfo = Repo switch
         {
             "azure" => await _repoService.CreateRemoteRepo(Repos.Azure),
+            "bitbucket" => await _repoService.CreateRemoteRepo(Repos.Bitbucket),
             "github" => await _repoService.CreateRemoteRepo(Repos.Github),
             "gitlab" => await _repoService.CreateRemoteRepo(Repos.Gitlab),
             _ => null

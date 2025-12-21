@@ -40,7 +40,7 @@ novugit init github --repo-name myrepo --description "This is my awesome repo"
 
 - Implement other repositories
   - [x] Gitlab (no good sdk for .net, will need to write own implementation)
-  - [ ] BitBucket (optional as I am not using it)
+  - [x] BitBucket (optional as I am not using it)
   - [x] Azure Devops
 - [ ] Add other config files with sane defaults
 - [ ] Add build system (github actions?)

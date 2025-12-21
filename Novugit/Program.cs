@@ -58,6 +58,7 @@ public class Program
         serviceCollection.AddScoped<IAzureService, AzureService>();
         serviceCollection.AddScoped<IGithubService, GithubService>();
         serviceCollection.AddScoped<IGitlabService, GitlabService>();
+        serviceCollection.AddScoped<IBitBucketService, BitBucketService>();
         serviceCollection.AddScoped<IGitignoreService, GitignoreService>();
     }
 }

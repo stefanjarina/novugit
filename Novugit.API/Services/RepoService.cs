@@ -14,15 +14,17 @@ public class RepoService : IRepoService
     private readonly IAzureService _azureService;
     private readonly IGithubService _githubService;
     private readonly IGitlabService _gitlabService;
+    private readonly IBitBucketService _bitBucketService;
 
     public RepoService(IConfiguration config, IGitignoreService gitignoreService, IAzureService azureService,
-        IGithubService githubService, IGitlabService gitlabService)
+        IGithubService githubService, IGitlabService gitlabService, IBitBucketService bitBucketService)
     {
         _config = config;
         _gitignoreService = gitignoreService;
         _azureService = azureService;
         _githubService = githubService;
         _gitlabService = gitlabService;
+        _bitBucketService = bitBucketService;
     }
 
     public async Task<ProjectInfo> CreateRemoteRepo(Repos repo)
@@ -32,6 +34,7 @@ public class RepoService : IRepoService
             Repos.Azure => await HandleAzure(),
             Repos.Github => await HandleGithub(),
             Repos.Gitlab => await HandleGitlab(),
+            Repos.Bitbucket => await HandleBitbucket(),
             _ => throw new ArgumentOutOfRangeException(nameof(repo), repo, null)
         };
 
@@ -179,11 +182,11 @@ public class RepoService : IRepoService
         }
 
         // fetch remote information
-        var authSpinner = new Spinner("Authenticating and fetching info from Github");
+        var authSpinner = new Spinner("Fetching info from Gitignore.io");
         authSpinner.Start();
         _githubService.Authenticate();
         var availableGitignoreConfigs = await _gitignoreService.List();
-        authSpinner.Succeed("Info successfully fetched from Github");
+        authSpinner.Succeed("Info successfully fetched");
 
         var projectInfo = Prompts.AskForProjectInfo(Repos.Azure, availableGitignoreConfigs);
 
@@ -207,10 +210,10 @@ public class RepoService : IRepoService
         }
 
         // fetch remote information
-        var authSpinner = new Spinner("Authenticating and fetching info from Gitlab");
+        var authSpinner = new Spinner("Fetching info from Gitignore.io");
         authSpinner.Start();
         var availableGitignoreConfigs = await _gitignoreService.List();
-        authSpinner.Succeed("Info successfully fetched from Gitlab");
+        authSpinner.Succeed("Info successfully fetched");
 
         var projectInfo = Prompts.AskForProjectInfo(Repos.Gitlab, availableGitignoreConfigs);
 
@@ -226,6 +229,52 @@ public class RepoService : IRepoService
         var url = await _gitlabService.CreateRepository(gitlabGroup, projectInfo);
         repoCreationSpinner.Succeed("Remote repo created");
 
+        projectInfo.RemoteUrl = url;
+
+        return projectInfo;
+    }
+
+    private async Task<ProjectInfo> HandleBitbucket()
+    {
+        var token = _config.GetValue("bitbucket", "token");
+        if (string.IsNullOrEmpty(token))
+        {
+            token = Prompts.AskForToken("Bitbucket");
+            _config.UpdateValue("bitbucket", "token", token);
+        }
+        
+        // fetch remote information
+        var authSpinner = new Spinner("Fetching info from Gitignore.io");
+        authSpinner.Start();
+        var availableGitignoreConfigs = await _gitignoreService.List();
+        authSpinner.Succeed("Info successfully fetched");
+        
+        var projectInfo = Prompts.AskForProjectInfo(Repos.Bitbucket, availableGitignoreConfigs);
+        var groupsSpinner = new Spinner("Fetching workspaces from Bitbucket");
+        groupsSpinner.Start();
+        var workspaces = await _bitBucketService.GetWorkspaces();
+        groupsSpinner.Succeed("Workspaces successfully fetched from Bitbucket");
+        
+        // filter out workspaces where privacy is enforced in case user want a public repo
+        if (projectInfo.Visibility == "public")
+        {
+            workspaces = workspaces.Where(w => !w.IsPrivacyEnforced).ToList();
+        }
+        
+        var workspace = Prompts.AskForBitbucketWorkspace(workspaces);
+        
+        var projectsSpinner = new Spinner("Fetching projects from Bitbucket");
+        projectsSpinner.Start();
+        var projects = await _bitBucketService.GetProjects(workspace);
+        projectsSpinner.Succeed("Projects successfully fetched from Bitbucket");
+        
+        var project = Prompts.AskForBitbucketProject(projects);
+        
+        var repoCreationSpinner = new Spinner("Creating repo on Bitbucket");
+        repoCreationSpinner.Start();
+        var url = await _bitBucketService.CreateRepository(projectInfo, workspace, project);
+        repoCreationSpinner.Succeed("Remote repo created");
+        
         projectInfo.RemoteUrl = url;
 
         return projectInfo;

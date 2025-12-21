@@ -3,7 +3,7 @@
 using Novugit.Base;
 using Novugit.Base.Enums;
 using Novugit.Base.Models;
-
+using Novugit.Base.Models.bitbucket;
 using Sharprompt;
 
 namespace Novugit.API;
@@ -65,6 +65,31 @@ public static class Prompts
         var group = Prompt.Select("Which group to use?", items: groups, textSelector: Selector);
 
         return group["value"];
+        
+        string Selector(Dictionary<string, string> dict)
+        {
+            return dict["name"];
+        }
+    }
+    
+    // BITBUCKET SPECIFIC
+    public static string AskForBitbucketWorkspace(IEnumerable<WorkspaceDetail> workspaces)
+    {
+        var workspace = Prompt.Select("Which workspace to use?", items: workspaces, textSelector: Selector);
+
+        return workspace.Slug;
+        
+        string Selector(WorkspaceDetail wd)
+        {
+            return wd.Name;
+        }
+    }
+    
+    public static string AskForBitbucketProject(IEnumerable<Dictionary<string, string>> projects)
+    {
+        var workspace = Prompt.Select("Which project to use?", items: projects, textSelector: Selector);
+
+        return workspace["key"];
         
         string Selector(Dictionary<string, string> dict)
         {

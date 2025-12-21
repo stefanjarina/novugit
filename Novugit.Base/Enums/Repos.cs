@@ -3,6 +3,7 @@
 public enum Repos
 {
     Azure,
+    Bitbucket,
     Github,
     Gitlab
 }
