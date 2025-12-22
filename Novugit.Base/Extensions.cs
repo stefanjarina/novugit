@@ -4,7 +4,7 @@ namespace Novugit.Base;
 
 public static class Extensions
 {
-    public static string Capitalize(this String input)
+    public static string Capitalize(this string input)
     {
         if (string.IsNullOrEmpty(input))
             return input;

@@ -128,6 +128,7 @@ public class Configuration : IConfiguration
         var providers = new List<Provider>
         {
             new() { Name = "azure", Token = "", BaseUrl = "https://dev.azure.com" },
+            new() { Name = "bitbucket", Token = "", BaseUrl = "https://api.bitbucket.org" },
             new() { Name = "github", Token = "", BaseUrl = "https://github.com" },
             new() { Name = "gitlab", Token = "", BaseUrl = "https://gitlab.com" }
         };

@@ -17,7 +17,7 @@ public class BitBucketService : IBitBucketService
 
         var provider = GetStoredProviderInfo();
         
-        var baseUrl = provider.BaseUrl.EndsWith("/") ? provider.BaseUrl : provider.BaseUrl + "/";
+        var baseUrl = provider.BaseUrl.EndsWith('/') ? $"{provider.BaseUrl}2.0/" : $"{provider.BaseUrl}/2.0/";
         
         var options = new RestClientOptions(baseUrl)
         {
