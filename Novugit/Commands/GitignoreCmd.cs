@@ -7,20 +7,11 @@ using Novugit.Base.Models;
 namespace Novugit.Commands;
 
 [Command(Name = "gitignore", Description = "Generate .gitignore file")]
-public class GitignoreCmd
+public class GitignoreCmd(IGitignoreService gitignoreService, IRepoService repoService)
 {
-    private readonly IGitignoreService _gitignoreService;
-    private readonly IRepoService _repoService;
-
-    public GitignoreCmd(IGitignoreService gitignoreService, IRepoService repoService)
-    {
-        _gitignoreService = gitignoreService;
-        _repoService = repoService;
-    }
-
     protected async Task<int> OnExecute(CommandLineApplication app)
     {
-        var availableGitignoreConfigs = await _gitignoreService.List();
+        var availableGitignoreConfigs = await gitignoreService.List();
 
         var currentDirInfo = Helpers.GetCurrentDirInfo();
 
@@ -36,7 +27,7 @@ public class GitignoreCmd
             ExcludedLocalFiles = excludedLocalFiles
         };
 
-        await _repoService.CreateGitIgnoreFile(projectInfo);
+        await repoService.CreateGitIgnoreFile(projectInfo);
 
         return 0;
     }

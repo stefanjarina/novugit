@@ -6,15 +6,8 @@ using Novugit.Base.Enums;
 namespace Novugit.Commands;
 
 [Command(Name = "init", Description = "Initialize new repository")]
-public class InitCmd : RepoArgBase
+public class InitCmd(IRepoService repoService) : RepoArgBase
 {
-    private readonly IRepoService _repoService;
-
-    public InitCmd(IRepoService repoService)
-    {
-        _repoService = repoService;
-    }
-
     protected async Task<int> OnExecute(CommandLineApplication app)
     {
         var currentDir = Environment.CurrentDirectory;
@@ -26,15 +19,15 @@ public class InitCmd : RepoArgBase
 
         var projectInfo = Repo switch
         {
-            "azure" => await _repoService.CreateRemoteRepo(Repos.Azure),
-            "bitbucket" => await _repoService.CreateRemoteRepo(Repos.Bitbucket),
-            "github" => await _repoService.CreateRemoteRepo(Repos.Github),
-            "gitlab" => await _repoService.CreateRemoteRepo(Repos.Gitlab),
+            "azure" => await repoService.CreateRemoteRepo(Repos.Azure),
+            "bitbucket" => await repoService.CreateRemoteRepo(Repos.Bitbucket),
+            "github" => await repoService.CreateRemoteRepo(Repos.Github),
+            "gitlab" => await repoService.CreateRemoteRepo(Repos.Gitlab),
             _ => null
         };
 
-        await _repoService.CreateGitIgnoreFile(projectInfo);
-        _repoService.InitializeLocalGit((Repos)Enum.Parse(typeof(Repos), Repo.Capitalize()), projectInfo);
+        await repoService.CreateGitIgnoreFile(projectInfo);
+        repoService.InitializeLocalGit((Repos)Enum.Parse(typeof(Repos), Repo.Capitalize()), projectInfo);
 
         return 0;
     }

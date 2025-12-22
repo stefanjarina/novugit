@@ -5,18 +5,11 @@ using Novugit.Base.Contracts;
 namespace Novugit.Commands.ConfigCommands;
 
 [Command(Name = "all", Description = "list whole configuration")]
-public class ListAllCmd
+public class ListAllCmd(IConfiguration config)
 {
-    private readonly IConfiguration _config;
-
-    public ListAllCmd(IConfiguration config)
-    {
-        _config = config;
-    }
-
     protected int OnExecute(CommandLineApplication app)
     {
-        Console.WriteLine(Helpers.ConvertObjectToYaml(_config.Config));
+        Console.WriteLine(Helpers.ConvertObjectToYaml(config.Config));
         return 0;
     }
 }

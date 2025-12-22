@@ -8,15 +8,9 @@ using ProjectInfo = Novugit.Base.Models.ProjectInfo;
 
 namespace Novugit.API.Services;
 
-public class AzureService : IAzureService
+public class AzureService(IConfiguration config) : IAzureService
 {
-    private readonly IConfiguration _config;
     private VssConnection _connection;
-
-    public AzureService(IConfiguration config)
-    {
-        _config = config;
-    }
 
     public void Authenticate()
     {
@@ -34,7 +28,7 @@ public class AzureService : IAzureService
 
     public Provider GetStoredProviderInfo()
     {
-        return _config.GetProvider("azure");
+        return config.GetProvider("azure");
     }
 
     public async Task<string> CreateRepository(string project, ProjectInfo projectInfo)

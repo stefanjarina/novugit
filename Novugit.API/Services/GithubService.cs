@@ -4,16 +4,9 @@ using Octokit;
 
 namespace Novugit.API.Services;
 
-public class GithubService : IGithubService
+public class GithubService(IConfiguration config) : IGithubService
 {
-    private readonly IConfiguration _config;
-    private readonly GitHubClient _client;
-
-    public GithubService(IConfiguration config)
-    {
-        _config = config;
-        _client = new GitHubClient(new ProductHeaderValue("novugit"));
-    }
+    private readonly GitHubClient _client = new(new ProductHeaderValue("novugit"));
 
     public void Authenticate()
     {
@@ -30,7 +23,7 @@ public class GithubService : IGithubService
 
     public Provider GetStoredProviderInfo()
     {
-        return _config.GetProvider("github");
+        return config.GetProvider("github");
     }
 
     public async Task<string> CreateRepository(ProjectInfo projectInfo)

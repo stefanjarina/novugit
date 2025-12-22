@@ -7,26 +7,15 @@ using Novugit.Base.Models;
 
 namespace Novugit.API.Services;
 
-public class RepoService : IRepoService
+public class RepoService(
+    IConfiguration config,
+    IGitignoreService gitignoreService,
+    IAzureService azureService,
+    IGithubService githubService,
+    IGitlabService gitlabService,
+    IBitBucketService bitBucketService)
+    : IRepoService
 {
-    private readonly IConfiguration _config;
-    private readonly IGitignoreService _gitignoreService;
-    private readonly IAzureService _azureService;
-    private readonly IGithubService _githubService;
-    private readonly IGitlabService _gitlabService;
-    private readonly IBitBucketService _bitBucketService;
-
-    public RepoService(IConfiguration config, IGitignoreService gitignoreService, IAzureService azureService,
-        IGithubService githubService, IGitlabService gitlabService, IBitBucketService bitBucketService)
-    {
-        _config = config;
-        _gitignoreService = gitignoreService;
-        _azureService = azureService;
-        _githubService = githubService;
-        _gitlabService = gitlabService;
-        _bitBucketService = bitBucketService;
-    }
-
     public async Task<ProjectInfo> CreateRemoteRepo(Repos repo)
     {
         var projectInfo = repo switch
@@ -64,7 +53,7 @@ public class RepoService : IRepoService
             if (projectInfo.GitIgnoreConfigs != null && projectInfo.GitIgnoreConfigs!.Any())
             {
                 gitignoreString += "# GITIGNORE.IO: \n";
-                gitignoreString += await _gitignoreService.FetchConfig(projectInfo.GitIgnoreConfigs);
+                gitignoreString += await gitignoreService.FetchConfig(projectInfo.GitIgnoreConfigs);
             }
 
             await File.WriteAllTextAsync(@".gitignore", gitignoreString);
@@ -100,11 +89,11 @@ public class RepoService : IRepoService
 
             using var localRepo = new Repository(initFolder);
 
-            var defaultBranch = _config.Config.DefaultBranch;
+            var defaultBranch = config.Config.DefaultBranch;
 
             // get git configuration
-            var config = localRepo.Config;
-            var author = config.BuildSignature(DateTimeOffset.Now);
+            var config1 = localRepo.Config;
+            var author = config1.BuildSignature(DateTimeOffset.Now);
 
             // add files and commit
             localRepo.Index.Add(".gitignore");
@@ -136,26 +125,26 @@ public class RepoService : IRepoService
 
     private async Task<ProjectInfo> HandleAzure()
     {
-        var org = _config.GetValue("azure", "OrgName");
+        var org = config.GetValue("azure", "OrgName");
         if (string.IsNullOrEmpty(org))
         {
             org = Prompts.AskForOrgName();
-            _config.UpdateValue("azure", "OrgName", org);
+            config.UpdateValue("azure", "OrgName", org);
         }
 
-        var token = _config.GetValue("azure", "token");
+        var token = config.GetValue("azure", "token");
         if (string.IsNullOrEmpty(token))
         {
             token = Prompts.AskForToken("Azure");
-            _config.UpdateValue("azure", "token", token);
+            config.UpdateValue("azure", "token", token);
         }
 
         // fetch remote information
         var authSpinner = new Spinner("Authenticating and fetching info from Azure DevOps");
         authSpinner.Start();
-        _azureService.Authenticate();
-        var availableGitignoreConfigs = await _gitignoreService.List();
-        var azureProjects = await _azureService.GetProjects();
+        azureService.Authenticate();
+        var availableGitignoreConfigs = await gitignoreService.List();
+        var azureProjects = await azureService.GetProjects();
         authSpinner.Succeed("Info successfully fetched from Azure DevOps");
 
         var projectInfo = Prompts.AskForProjectInfo(Repos.Azure, availableGitignoreConfigs);
@@ -164,7 +153,7 @@ public class RepoService : IRepoService
 
         var repoCreationSpinner = new Spinner("Creating repo in Azure DevOps");
         repoCreationSpinner.Start();
-        var url = await _azureService.CreateRepository(azureProjectLocation, projectInfo);
+        var url = await azureService.CreateRepository(azureProjectLocation, projectInfo);
         repoCreationSpinner.Succeed("Remote repo created");
 
         projectInfo.RemoteUrl = url;
@@ -174,25 +163,25 @@ public class RepoService : IRepoService
 
     private async Task<ProjectInfo> HandleGithub()
     {
-        var token = _config.GetValue("github", "token");
+        var token = config.GetValue("github", "token");
         if (string.IsNullOrEmpty(token))
         {
             token = Prompts.AskForToken("Github");
-            _config.UpdateValue("github", "token", token);
+            config.UpdateValue("github", "token", token);
         }
 
         // fetch remote information
         var authSpinner = new Spinner("Fetching info from Gitignore.io");
         authSpinner.Start();
-        _githubService.Authenticate();
-        var availableGitignoreConfigs = await _gitignoreService.List();
+        githubService.Authenticate();
+        var availableGitignoreConfigs = await gitignoreService.List();
         authSpinner.Succeed("Info successfully fetched");
 
         var projectInfo = Prompts.AskForProjectInfo(Repos.Azure, availableGitignoreConfigs);
 
         var repoCreationSpinner = new Spinner("Creating repo on Github");
         repoCreationSpinner.Start();
-        var url = await _githubService.CreateRepository(projectInfo);
+        var url = await githubService.CreateRepository(projectInfo);
         repoCreationSpinner.Succeed("Remote repo created");
 
         projectInfo.RemoteUrl = url;
@@ -202,31 +191,31 @@ public class RepoService : IRepoService
 
     private async Task<ProjectInfo> HandleGitlab()
     {
-        var token = _config.GetValue("gitlab", "token");
+        var token = config.GetValue("gitlab", "token");
         if (string.IsNullOrEmpty(token))
         {
             token = Prompts.AskForToken("Gitlab");
-            _config.UpdateValue("gitlab", "token", token);
+            config.UpdateValue("gitlab", "token", token);
         }
 
         // fetch remote information
         var authSpinner = new Spinner("Fetching info from Gitignore.io");
         authSpinner.Start();
-        var availableGitignoreConfigs = await _gitignoreService.List();
+        var availableGitignoreConfigs = await gitignoreService.List();
         authSpinner.Succeed("Info successfully fetched");
 
         var projectInfo = Prompts.AskForProjectInfo(Repos.Gitlab, availableGitignoreConfigs);
 
         var groupsSpinner = new Spinner("Fetching info about groups from Gitlab based on project visibility");
         groupsSpinner.Start();
-        var groups = await _gitlabService.GetGroups(projectInfo.Visibility);
+        var groups = await gitlabService.GetGroups(projectInfo.Visibility);
         groupsSpinner.Succeed("Info successfully fetched from Gitlab");
 
         var gitlabGroup = Prompts.AskForGitlabGroup(groups);
 
         var repoCreationSpinner = new Spinner("Creating repo on Gitlab");
         repoCreationSpinner.Start();
-        var url = await _gitlabService.CreateRepository(gitlabGroup, projectInfo);
+        var url = await gitlabService.CreateRepository(gitlabGroup, projectInfo);
         repoCreationSpinner.Succeed("Remote repo created");
 
         projectInfo.RemoteUrl = url;
@@ -236,23 +225,23 @@ public class RepoService : IRepoService
 
     private async Task<ProjectInfo> HandleBitbucket()
     {
-        var token = _config.GetValue("bitbucket", "token");
+        var token = config.GetValue("bitbucket", "token");
         if (string.IsNullOrEmpty(token))
         {
             token = Prompts.AskForToken("Bitbucket");
-            _config.UpdateValue("bitbucket", "token", token);
+            config.UpdateValue("bitbucket", "token", token);
         }
         
         // fetch remote information
         var authSpinner = new Spinner("Fetching info from Gitignore.io");
         authSpinner.Start();
-        var availableGitignoreConfigs = await _gitignoreService.List();
+        var availableGitignoreConfigs = await gitignoreService.List();
         authSpinner.Succeed("Info successfully fetched");
         
         var projectInfo = Prompts.AskForProjectInfo(Repos.Bitbucket, availableGitignoreConfigs);
         var groupsSpinner = new Spinner("Fetching workspaces from Bitbucket");
         groupsSpinner.Start();
-        var workspaces = await _bitBucketService.GetWorkspaces();
+        var workspaces = await bitBucketService.GetWorkspaces();
         groupsSpinner.Succeed("Workspaces successfully fetched from Bitbucket");
         
         // filter out workspaces where privacy is enforced in case user want a public repo
@@ -265,14 +254,14 @@ public class RepoService : IRepoService
         
         var projectsSpinner = new Spinner("Fetching projects from Bitbucket");
         projectsSpinner.Start();
-        var projects = await _bitBucketService.GetProjects(workspace);
+        var projects = await bitBucketService.GetProjects(workspace);
         projectsSpinner.Succeed("Projects successfully fetched from Bitbucket");
         
         var project = Prompts.AskForBitbucketProject(projects);
         
         var repoCreationSpinner = new Spinner("Creating repo on Bitbucket");
         repoCreationSpinner.Start();
-        var url = await _bitBucketService.CreateRepository(projectInfo, workspace, project);
+        var url = await bitBucketService.CreateRepository(projectInfo, workspace, project);
         repoCreationSpinner.Succeed("Remote repo created");
         
         projectInfo.RemoteUrl = url;
