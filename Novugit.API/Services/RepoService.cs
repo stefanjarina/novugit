@@ -68,7 +68,7 @@ public class RepoService(
         spinner.Succeed(".gitignore file created");
     }
 
-    public void InitializeLocalGit(Repos repo, ProjectInfo projectInfo)
+    public async Task InitializeLocalGit(Repos repo, ProjectInfo projectInfo)
     {
         var spinner = new Spinner("Initializing local git...");
         spinner.Start();
@@ -107,8 +107,8 @@ public class RepoService(
             // finally push to remote
             spinner.Succeed("Local git initialized, attempting to push to remote repository...");
 
-            var pushResult = Helpers.ExecuteCommandInteractively("git", $"push --set-upstream origin {defaultBranch}",
-                "Are you sure you want to continue connecting (yes/no/[fingerprint])?");
+            var pushResult = await Helpers.ExecuteCommandInteractivelyAsync("git", $"push --set-upstream origin {defaultBranch}",
+                "yes");
 
             if (pushResult)
             {

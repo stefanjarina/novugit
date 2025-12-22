@@ -27,7 +27,7 @@ public class InitCmd(IRepoService repoService) : RepoArgBase
         };
 
         await repoService.CreateGitIgnoreFile(projectInfo);
-        repoService.InitializeLocalGit((Repos)Enum.Parse(typeof(Repos), Repo.Capitalize()), projectInfo);
+        await repoService.InitializeLocalGit((Repos)Enum.Parse(typeof(Repos), Repo.Capitalize()), projectInfo);
 
         return 0;
     }
