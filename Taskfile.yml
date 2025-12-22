@@ -38,20 +38,20 @@ tasks:
     desc: Publish the project for Linux
     dir: ./Novugit
     cmds:
-      - dotnet publish --no-restore --no-build -c {{.PUBLISH_CONFIGURATION}} -r linux-x64 {{.PUBLISH_NO_PDB}} -o ../{{.PUBLISH_DIR}}/linux 
+      - dotnet publish --no-restore -c {{.PUBLISH_CONFIGURATION}} -r linux-x64 {{.PUBLISH_NO_PDB}} -o ../{{.PUBLISH_DIR}}/linux 
       
   publish_windows:
     desc: Publish the project for Windows
     dir: ./Novugit
     cmds:
-      - dotnet publish --no-restore --no-build -c {{.PUBLISH_CONFIGURATION}} -r win-x64 {{.PUBLISH_NO_PDB}} -o ../{{.PUBLISH_DIR}}/windows
+      - dotnet publish --no-restore -c {{.PUBLISH_CONFIGURATION}} -r win-x64 {{.PUBLISH_NO_PDB}} -o ../{{.PUBLISH_DIR}}/windows
         
   publish_macos:
     desc: Publish the project for MacOS
     dir: ./Novugit
     cmds:
-      - dotnet publish --no-restore --no-build -c {{.PUBLISH_CONFIGURATION}} -r osx-x64 {{.PUBLISH_NO_PDB}} -o ../{{.PUBLISH_DIR}}/macosx_x64
-      - dotnet publish --no-restore --no-build -c {{.PUBLISH_CONFIGURATION}} -r osx-arm64 {{.PUBLISH_NO_PDB}} -o ../{{.PUBLISH_DIR}}/macos_arm64
+      - dotnet publish --no-restore -c {{.PUBLISH_CONFIGURATION}} -r osx-x64 {{.PUBLISH_NO_PDB}} -o ../{{.PUBLISH_DIR}}/macosx_x64
+      - dotnet publish --no-restore -c {{.PUBLISH_CONFIGURATION}} -r osx-arm64 {{.PUBLISH_NO_PDB}} -o ../{{.PUBLISH_DIR}}/macos_arm64
   
   publish:
     desc: Publish the project for all platforms
