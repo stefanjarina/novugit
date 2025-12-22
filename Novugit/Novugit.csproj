@@ -4,13 +4,14 @@
     <OutputType>Exe</OutputType>
     <AssemblyName>novugit</AssemblyName>
     <TargetFramework>net10.0</TargetFramework>
-    <PublishSingleFile Condition="'$(Configuration)' == 'Release'">true</PublishSingleFile>
-    <SelfContained Condition="'$(Configuration)' == 'Release'">true</SelfContained>
-    <PublishTrimmed Condition="'$(Configuration)' == 'Release'">false</PublishTrimmed>
-    <PublishReadyToRun Condition="'$(Configuration)' == 'Release'">true</PublishReadyToRun>
-    <PublishReadyToRunShowWarnings Condition="'$(Configuration)' == 'Release'">true</PublishReadyToRunShowWarnings>
-	<RuntimeIdentifier>win-x64</RuntimeIdentifier>
-	<RuntimeIdentifiers>linux-x64;win-x64;osx-x64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>linux-x64;win-x64;osx-x64;osx-arm64</RuntimeIdentifiers>
+
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>true</PublishSingleFile>
+    <PublishReadyToRun>true</PublishReadyToRun>
+    <PublishReadyToRunShowWarnings>true</PublishReadyToRunShowWarnings>
+    <PublishReadyToRunComposite>true</PublishReadyToRunComposite>
+    
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>Latest</LangVersion>
     <Nullable>disable</Nullable>
