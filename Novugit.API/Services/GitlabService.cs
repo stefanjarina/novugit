@@ -15,7 +15,7 @@ public class GitlabService : IGitlabService
     {
         _config = config;
 
-        var provider = GetStoredProviderInfo();
+        var provider = _config.GetProvider("gitlab");
 
         var baseUrl = provider.BaseUrl.EndsWith('/') ? $"{provider.BaseUrl}api/v4/" : $"{provider.BaseUrl}/api/v4/";
 
@@ -30,11 +30,6 @@ public class GitlabService : IGitlabService
     public RestClient GetInstance()
     {
         return _client;
-    }
-
-    public Provider GetStoredProviderInfo()
-    {
-        return _config.GetProvider("gitlab");
     }
 
     public async Task<string> CreateRepository(string projectId, ProjectInfo projectInfo)

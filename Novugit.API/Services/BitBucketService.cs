@@ -15,7 +15,7 @@ public class BitBucketService : IBitBucketService
     {
         _config = config;
 
-        var provider = GetStoredProviderInfo();
+        var provider = _config.GetProvider("bitbucket");
         
         var baseUrl = provider.BaseUrl.EndsWith('/') ? $"{provider.BaseUrl}2.0/" : $"{provider.BaseUrl}/2.0/";
         
@@ -30,11 +30,6 @@ public class BitBucketService : IBitBucketService
     public RestClient GetInstance()
     {
         return _client;
-    }
-
-    public Provider GetStoredProviderInfo()
-    {
-        return _config.GetProvider("bitbucket");
     }
 
     public async Task<string> CreateRepository(ProjectInfo projectInfo, string workspace, string project)

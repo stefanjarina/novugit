@@ -3,7 +3,7 @@ using Novugit.Base.Models;
 
 namespace Novugit.Base.Contracts;
 
-public interface IAzureService : IGitApiService
+public interface IAzureService
 {
     VssConnection GetInstance();
     void Authenticate();

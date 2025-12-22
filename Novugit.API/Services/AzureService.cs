@@ -14,7 +14,7 @@ public class AzureService(IConfiguration config) : IAzureService
 
     public void Authenticate()
     {
-        var provider = GetStoredProviderInfo();
+        var provider = config.GetProvider("azure");
 
         var credentials = new VssBasicCredential(string.Empty, provider.Token);
 
@@ -24,11 +24,6 @@ public class AzureService(IConfiguration config) : IAzureService
     public VssConnection GetInstance()
     {
         return _connection;
-    }
-
-    public Provider GetStoredProviderInfo()
-    {
-        return config.GetProvider("azure");
     }
 
     public async Task<string> CreateRepository(string project, ProjectInfo projectInfo)

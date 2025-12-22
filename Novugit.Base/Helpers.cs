@@ -21,22 +21,6 @@ public static class Helpers
         return new CurrentDirectoryInfo { Name = di.Name, Files = files, Directories = directories };
     }
 
-    public static bool ExecuteCommandAndGetStatus(string cmdName, string args)
-    {
-        var process = CreateControlledProcess(cmdName, args);
-        StartupControlledProcess(process);
-        if (process == null)
-        {
-            return false;
-        }
-
-        _ = process.StandardOutput.ReadToEnd();
-        var stdErr = process.StandardError.ReadToEnd();
-        process.WaitForExit();
-
-        return process.ExitCode == 0 ? true : throw new Exception(stdErr);
-    }
-
     public static bool ExecuteCommandInteractively(string cmdName, string args, string inputDetectionString,
         string answer = null)
     {

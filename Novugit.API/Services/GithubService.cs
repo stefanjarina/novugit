@@ -10,7 +10,7 @@ public class GithubService(IConfiguration config) : IGithubService
 
     public void Authenticate()
     {
-        var provider = GetStoredProviderInfo();
+        var provider = config.GetProvider("github");
 
         var credentials = new Credentials(provider.Token);
         _client.Credentials = credentials;
@@ -19,11 +19,6 @@ public class GithubService(IConfiguration config) : IGithubService
     public GitHubClient GetInstance()
     {
         return _client;
-    }
-
-    public Provider GetStoredProviderInfo()
-    {
-        return config.GetProvider("github");
     }
 
     public async Task<string> CreateRepository(ProjectInfo projectInfo)

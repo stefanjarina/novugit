@@ -3,7 +3,7 @@ using Octokit;
 
 namespace Novugit.Base.Contracts;
 
-public interface IGithubService : IGitApiService
+public interface IGithubService
 {
     GitHubClient GetInstance();
     void Authenticate();
