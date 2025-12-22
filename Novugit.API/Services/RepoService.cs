@@ -251,7 +251,7 @@ public class RepoService(
         {
             workspaces = workspaces.Where(w => !w.IsPrivacyEnforced).ToList();
         }
-        
+
         var workspace = Prompts.AskForBitbucketWorkspace(workspaces);
         
         var projectsSpinner = new Spinner("Fetching projects from Bitbucket");
