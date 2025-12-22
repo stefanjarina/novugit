@@ -4,7 +4,7 @@ using RestSharp;
 
 namespace Novugit.Base.Contracts;
 
-public interface IBitBucketService
+public interface IBitBucketService : IProvider
 {
     RestClient GetInstance();
     Task<string> CreateRepository(ProjectInfo projectInfo, string workspace, string project);

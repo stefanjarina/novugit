@@ -6,16 +6,13 @@ using RestSharp.Authenticators;
 
 namespace Novugit.API.Services;
 
-public class GitlabService : IGitlabService
+public class GitlabService(IConfiguration config) : IGitlabService
 {
-    private readonly IConfiguration _config;
-    private readonly RestClient _client;
+    private RestClient _client;
 
-    public GitlabService(IConfiguration config)
+    public void Authenticate()
     {
-        _config = config;
-
-        var provider = _config.GetProvider("gitlab");
+        var provider = config.GetProvider("gitlab");
 
         var baseUrl = provider.BaseUrl.EndsWith('/') ? $"{provider.BaseUrl}api/v4/" : $"{provider.BaseUrl}/api/v4/";
 

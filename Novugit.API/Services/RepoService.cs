@@ -208,6 +208,7 @@ public class RepoService(
 
         var groupsSpinner = new Spinner("Fetching info about groups from Gitlab based on project visibility");
         groupsSpinner.Start();
+        gitlabService.Authenticate();
         var groups = await gitlabService.GetGroups(projectInfo.Visibility);
         groupsSpinner.Succeed("Info successfully fetched from Gitlab");
 
@@ -241,6 +242,7 @@ public class RepoService(
         var projectInfo = Prompts.AskForProjectInfo(Repos.Bitbucket, availableGitignoreConfigs);
         var groupsSpinner = new Spinner("Fetching workspaces from Bitbucket");
         groupsSpinner.Start();
+        bitBucketService.Authenticate();
         var workspaces = await bitBucketService.GetWorkspaces();
         groupsSpinner.Succeed("Workspaces successfully fetched from Bitbucket");
         

@@ -6,16 +6,13 @@ using RestSharp.Authenticators;
 
 namespace Novugit.API.Services;
 
-public class BitBucketService : IBitBucketService
+public class BitBucketService(IConfiguration config) : IBitBucketService
 {
-    private readonly IConfiguration _config;
-    private readonly RestClient _client;
+    private RestClient _client;
 
-    public BitBucketService(IConfiguration config)
+    public void Authenticate()
     {
-        _config = config;
-
-        var provider = _config.GetProvider("bitbucket");
+        var provider = config.GetProvider("bitbucket");
         
         var baseUrl = provider.BaseUrl.EndsWith('/') ? $"{provider.BaseUrl}2.0/" : $"{provider.BaseUrl}/2.0/";
         

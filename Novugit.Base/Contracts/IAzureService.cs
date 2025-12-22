@@ -3,10 +3,9 @@ using Novugit.Base.Models;
 
 namespace Novugit.Base.Contracts;
 
-public interface IAzureService
+public interface IAzureService : IProvider
 {
     VssConnection GetInstance();
-    void Authenticate();
     Task<string> CreateRepository(string project, ProjectInfo projectInfo);
     Task<IEnumerable<Dictionary<string, object>>> GetProjects();
 }

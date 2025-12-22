@@ -3,7 +3,7 @@ using RestSharp;
 
 namespace Novugit.Base.Contracts;
 
-public interface IGitlabService
+public interface IGitlabService : IProvider
 {
     RestClient GetInstance();
     Task<string> CreateRepository(string group, ProjectInfo projectInfo);

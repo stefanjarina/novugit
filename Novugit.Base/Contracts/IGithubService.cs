@@ -3,9 +3,8 @@ using Octokit;
 
 namespace Novugit.Base.Contracts;
 
-public interface IGithubService
+public interface IGithubService : IProvider
 {
     GitHubClient GetInstance();
-    void Authenticate();
     Task<string> CreateRepository(ProjectInfo projectInfo);
 }
