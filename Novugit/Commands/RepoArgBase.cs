@@ -8,7 +8,7 @@ public abstract class RepoArgBase
     [Required]
     [Argument(0)]
     [McMaster.Extensions.CommandLineUtils.AllowedValues(
-        "github", "gitlab", "azure", "bitbucket", "gitea",
+        "github", "gitlab", "azure", "bitbucket", "forgejo", "gitea",
         IgnoreCase = true)]
     public string Repo { get; init; }
 }

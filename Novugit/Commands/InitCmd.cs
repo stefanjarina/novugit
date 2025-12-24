@@ -16,16 +16,10 @@ public class InitCmd(IRepoService repoService) : RepoArgBase
             Console.WriteLine("Already a git repository, exiting...");
             Environment.Exit(0);
         }
+        
+        var repoType = Enum.Parse<Repos>(Repo.Capitalize());
 
-        var projectInfo = Repo switch
-        {
-            "azure" => await repoService.CreateRemoteRepo(Repos.Azure),
-            "bitbucket" => await repoService.CreateRemoteRepo(Repos.Bitbucket),
-            "gitea" => await repoService.CreateRemoteRepo(Repos.Gitea),
-            "github" => await repoService.CreateRemoteRepo(Repos.Github),
-            "gitlab" => await repoService.CreateRemoteRepo(Repos.Gitlab),
-            _ => null
-        };
+        var projectInfo = await repoService.CreateRemoteRepo(repoType);
 
         await repoService.CreateGitIgnoreFile(projectInfo);
         await repoService.InitializeLocalGit(Enum.Parse<Repos>(Repo.Capitalize()), projectInfo);

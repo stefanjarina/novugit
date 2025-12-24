@@ -58,6 +58,7 @@ public class Program
         serviceCollection.AddScoped<IRepoService, RepoService>();
         serviceCollection.AddScoped<IAzureService, AzureService>();
         serviceCollection.AddScoped<IBitBucketService, BitBucketService>();
+        serviceCollection.AddScoped<IForgejoService, ForgejoService>();
         serviceCollection.AddScoped<IGiteaService, GiteaService>();
         serviceCollection.AddScoped<IGithubService, GithubService>();
         serviceCollection.AddScoped<IGitlabService, GitlabService>();

@@ -12,6 +12,7 @@ public class RepoService(
     IGitignoreService gitignoreService,
     IAzureService azureService,
     IBitBucketService bitBucketService,
+    IForgejoService forgejoService,
     IGithubService githubService,
     IGitlabService gitlabService,
     IGiteaService giteaService)
@@ -23,6 +24,7 @@ public class RepoService(
         {
             Repos.Azure => await HandleAzure(),
             Repos.Bitbucket => await HandleBitbucket(),
+            Repos.Forgejo => await HandleForgejo(),
             Repos.Gitea => await HandleGitea(),
             Repos.Github => await HandleGithub(),
             Repos.Gitlab => await HandleGitlab(),
@@ -290,6 +292,37 @@ public class RepoService(
         var repoCreationSpinner = new Spinner("Creating repo on Gitea");
         repoCreationSpinner.Start();
         var url = await giteaService.CreateRepository(organization, projectInfo);
+        repoCreationSpinner.Succeed("Remote repo created");
+        
+        projectInfo.RemoteUrl = url;
+        
+        return projectInfo;
+    }
+    
+    private async Task<ProjectInfo> HandleForgejo()
+    {
+        var token = config.GetValue("forgejo", "token");
+        if (string.IsNullOrEmpty(token))
+        {
+            token = Prompts.AskForToken("Forgejo");
+            config.UpdateValue("forgejo", "token", token);
+        }
+        
+        var availableGitignoreConfigs = await GetAvailableGitignoreConfigs();
+        
+        var projectInfo = Prompts.AskForProjectInfo(Repos.Forgejo, availableGitignoreConfigs);
+        
+        var organizationsSpinner = new Spinner("Fetching organizations from Forgejo");
+        organizationsSpinner.Start();
+        forgejoService.Authenticate();
+        var organizations = await forgejoService.GetOrganizations();
+        organizationsSpinner.Succeed("Organizations successfully fetched from Forgejo");
+        
+        var organization = Prompts.AskForGiteaOrganization(organizations);
+        
+        var repoCreationSpinner = new Spinner("Creating repo on Forgejo");
+        repoCreationSpinner.Start();
+        var url = await forgejoService.CreateRepository(organization, projectInfo);
         repoCreationSpinner.Succeed("Remote repo created");
         
         projectInfo.RemoteUrl = url;

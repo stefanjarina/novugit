@@ -119,7 +119,7 @@ public static class Prompts
         if (repo == Repos.Gitlab)
             visibilityOptions = ["private", "internal", "public"];
         
-        if (repo == Repos.Gitea)
+        if (repo == Repos.Gitea || repo == Repos.Forgejo)
             visibilityOptions = ["private", "limited", "public"];
 
         var visibility = Prompt.Select("Visibility of a repository", items: visibilityOptions, defaultValue: "public");
