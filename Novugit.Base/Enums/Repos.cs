@@ -4,6 +4,7 @@ public enum Repos
 {
     Azure,
     Bitbucket,
+    Gitea,
     Github,
     Gitlab
 }

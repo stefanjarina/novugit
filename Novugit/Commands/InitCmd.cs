@@ -21,13 +21,14 @@ public class InitCmd(IRepoService repoService) : RepoArgBase
         {
             "azure" => await repoService.CreateRemoteRepo(Repos.Azure),
             "bitbucket" => await repoService.CreateRemoteRepo(Repos.Bitbucket),
+            "gitea" => await repoService.CreateRemoteRepo(Repos.Gitea),
             "github" => await repoService.CreateRemoteRepo(Repos.Github),
             "gitlab" => await repoService.CreateRemoteRepo(Repos.Gitlab),
             _ => null
         };
 
         await repoService.CreateGitIgnoreFile(projectInfo);
-        await repoService.InitializeLocalGit((Repos)Enum.Parse(typeof(Repos), Repo.Capitalize()), projectInfo);
+        await repoService.InitializeLocalGit(Enum.Parse<Repos>(Repo.Capitalize()), projectInfo);
 
         return 0;
     }

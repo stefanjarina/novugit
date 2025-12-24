@@ -4,6 +4,7 @@ using Novugit.Base;
 using Novugit.Base.Enums;
 using Novugit.Base.Models;
 using Novugit.Base.Models.bitbucket;
+using Novugit.Base.Models.gitea;
 using Sharprompt;
 
 namespace Novugit.API;
@@ -29,6 +30,32 @@ public static class Prompts
         string Selector(Dictionary<string, object> dict)
         {
             return dict["name"].ToString();
+        }
+    }
+    
+    // BITBUCKET SPECIFIC
+    public static string AskForBitbucketWorkspace(IEnumerable<WorkspaceDetail> workspaces)
+    {
+        var workspace = Prompt.Select("Which workspace to use?", items: workspaces, textSelector: Selector);
+
+        return workspace.Slug;
+        
+        string Selector(WorkspaceDetail wd)
+        {
+            return wd.Name;
+        }
+    }
+    
+    // GITEA SPECIFIC
+    public static Organization AskForGiteaOrganization(IEnumerable<Organization> organizations)
+    {
+        var organization = Prompt.Select("Which organization to use?", items: organizations, textSelector: Selector);
+
+        return organization;
+        
+        string Selector(Organization org)
+        {
+            return org.Name;
         }
     }
 
@@ -72,19 +99,6 @@ public static class Prompts
         }
     }
     
-    // BITBUCKET SPECIFIC
-    public static string AskForBitbucketWorkspace(IEnumerable<WorkspaceDetail> workspaces)
-    {
-        var workspace = Prompt.Select("Which workspace to use?", items: workspaces, textSelector: Selector);
-
-        return workspace.Slug;
-        
-        string Selector(WorkspaceDetail wd)
-        {
-            return wd.Name;
-        }
-    }
-    
     public static string AskForBitbucketProject(IEnumerable<Dictionary<string, string>> projects)
     {
         var workspace = Prompt.Select("Which project to use?", items: projects, textSelector: Selector);
@@ -103,7 +117,10 @@ public static class Prompts
         var visibilityOptions = new[] { "private", "public" };
 
         if (repo == Repos.Gitlab)
-            visibilityOptions = new[] { "private", "internal", "public" };
+            visibilityOptions = ["private", "internal", "public"];
+        
+        if (repo == Repos.Gitea)
+            visibilityOptions = ["private", "limited", "public"];
 
         var visibility = Prompt.Select("Visibility of a repository", items: visibilityOptions, defaultValue: "public");
 

@@ -11,9 +11,10 @@ public class RepoService(
     IConfiguration config,
     IGitignoreService gitignoreService,
     IAzureService azureService,
+    IBitBucketService bitBucketService,
     IGithubService githubService,
     IGitlabService gitlabService,
-    IBitBucketService bitBucketService)
+    IGiteaService giteaService)
     : IRepoService
 {
     public async Task<ProjectInfo> CreateRemoteRepo(Repos repo)
@@ -21,9 +22,10 @@ public class RepoService(
         var projectInfo = repo switch
         {
             Repos.Azure => await HandleAzure(),
+            Repos.Bitbucket => await HandleBitbucket(),
+            Repos.Gitea => await HandleGitea(),
             Repos.Github => await HandleGithub(),
             Repos.Gitlab => await HandleGitlab(),
-            Repos.Bitbucket => await HandleBitbucket(),
             _ => throw new ArgumentOutOfRangeException(nameof(repo), repo, null)
         };
 
@@ -138,12 +140,13 @@ public class RepoService(
             token = Prompts.AskForToken("Azure");
             config.UpdateValue("azure", "token", token);
         }
+        
+        var availableGitignoreConfigs = await GetAvailableGitignoreConfigs();
 
         // fetch remote information
         var authSpinner = new Spinner("Authenticating and fetching info from Azure DevOps");
         authSpinner.Start();
         azureService.Authenticate();
-        var availableGitignoreConfigs = await gitignoreService.List();
         var azureProjects = await azureService.GetProjects();
         authSpinner.Succeed("Info successfully fetched from Azure DevOps");
 
@@ -170,13 +173,13 @@ public class RepoService(
             config.UpdateValue("github", "token", token);
         }
 
-        // fetch remote information
-        var authSpinner = new Spinner("Fetching info from Gitignore.io");
+        var availableGitignoreConfigs = await GetAvailableGitignoreConfigs();
+
+        var authSpinner = new Spinner("Authenticating to Github");
         authSpinner.Start();
         githubService.Authenticate();
-        var availableGitignoreConfigs = await gitignoreService.List();
-        authSpinner.Succeed("Info successfully fetched");
-
+        authSpinner.Succeed();
+        
         var projectInfo = Prompts.AskForProjectInfo(Repos.Azure, availableGitignoreConfigs);
 
         var repoCreationSpinner = new Spinner("Creating repo on Github");
@@ -198,11 +201,7 @@ public class RepoService(
             config.UpdateValue("gitlab", "token", token);
         }
 
-        // fetch remote information
-        var authSpinner = new Spinner("Fetching info from Gitignore.io");
-        authSpinner.Start();
-        var availableGitignoreConfigs = await gitignoreService.List();
-        authSpinner.Succeed("Info successfully fetched");
+        var availableGitignoreConfigs = await GetAvailableGitignoreConfigs();
 
         var projectInfo = Prompts.AskForProjectInfo(Repos.Gitlab, availableGitignoreConfigs);
 
@@ -233,12 +232,8 @@ public class RepoService(
             config.UpdateValue("bitbucket", "token", token);
         }
         
-        // fetch remote information
-        var authSpinner = new Spinner("Fetching info from Gitignore.io");
-        authSpinner.Start();
-        var availableGitignoreConfigs = await gitignoreService.List();
-        authSpinner.Succeed("Info successfully fetched");
-        
+        var availableGitignoreConfigs = await GetAvailableGitignoreConfigs();
+
         var projectInfo = Prompts.AskForProjectInfo(Repos.Bitbucket, availableGitignoreConfigs);
         var groupsSpinner = new Spinner("Fetching workspaces from Bitbucket");
         groupsSpinner.Start();
@@ -269,5 +264,46 @@ public class RepoService(
         projectInfo.RemoteUrl = url;
 
         return projectInfo;
+    }
+
+    private async Task<ProjectInfo> HandleGitea()
+    {
+        var token = config.GetValue("gitea", "token");
+        if (string.IsNullOrEmpty(token))
+        {
+            token = Prompts.AskForToken("Gitea");
+            config.UpdateValue("gitea", "token", token);
+        }
+        
+        var availableGitignoreConfigs = await GetAvailableGitignoreConfigs();
+        
+        var projectInfo = Prompts.AskForProjectInfo(Repos.Gitea, availableGitignoreConfigs);
+        
+        var organizationsSpinner = new Spinner("Fetching organizations from Gitea");
+        organizationsSpinner.Start();
+        giteaService.Authenticate();
+        var organizations = await giteaService.GetOrganizations();
+        organizationsSpinner.Succeed("Organizations successfully fetched from Gitea");
+        
+        var organization = Prompts.AskForGiteaOrganization(organizations);
+        
+        var repoCreationSpinner = new Spinner("Creating repo on Gitea");
+        repoCreationSpinner.Start();
+        var url = await giteaService.CreateRepository(organization, projectInfo);
+        repoCreationSpinner.Succeed("Remote repo created");
+        
+        projectInfo.RemoteUrl = url;
+        
+        return projectInfo;
+    }
+    
+    private async Task<IEnumerable<string>> GetAvailableGitignoreConfigs()
+    {
+        // fetch remote information
+        var authSpinner = new Spinner("Fetching info from Gitignore.io");
+        authSpinner.Start();
+        var availableGitignoreConfigs = await gitignoreService.List();
+        authSpinner.Succeed("Info successfully fetched");
+        return availableGitignoreConfigs;
     }
 }

@@ -54,11 +54,12 @@ public class Program
         serviceCollection.AddSingleton<IConfiguration, Configuration>();
 
         // add services
+        serviceCollection.AddScoped<IGitignoreService, GitignoreService>();
         serviceCollection.AddScoped<IRepoService, RepoService>();
         serviceCollection.AddScoped<IAzureService, AzureService>();
+        serviceCollection.AddScoped<IBitBucketService, BitBucketService>();
+        serviceCollection.AddScoped<IGiteaService, GiteaService>();
         serviceCollection.AddScoped<IGithubService, GithubService>();
         serviceCollection.AddScoped<IGitlabService, GitlabService>();
-        serviceCollection.AddScoped<IBitBucketService, BitBucketService>();
-        serviceCollection.AddScoped<IGitignoreService, GitignoreService>();
     }
 }
