@@ -117,8 +117,11 @@ public class RepoService(
             spinner.Fail($"Unable to initialize git in '{initFolder}'");
             throw new NovugitException($"Failed to initialize local git repository in '{initFolder}'", e);
         }
+    }
 
-        var pushSpinner = new Spinner("Initializing local git...");
+    public async Task PushToRemote()
+    {
+        var defaultBranch = config.Config.DefaultBranch;
         
         try
         {
@@ -127,24 +130,17 @@ public class RepoService(
             if (!pushToRemote)
                 return;
 
-            pushSpinner.Start();
             
-            var pushResult = await Helpers.ExecuteCommandInteractivelyAsync("git", $"push --set-upstream origin {defaultBranch}",
-                "yes");
+            var pushResult = await Helpers.ExecuteCommandInteractivelyAsync("git", $"push --set-upstream origin {defaultBranch}");
 
             if (pushResult)
             {
-                pushSpinner.Succeed($"Local repository successfully pushed to '{repo}'");
-            }
-            else
-            {
-                pushSpinner.Fail($"Failed to push to remote repository");
+                ConsoleOutput.WriteSuccess($"Local repository successfully pushed to remote'");
             }
         }
         catch (Exception e)
         {
-            pushSpinner.Fail($"Failed to push to remote repository {repo}");
-            throw new NovugitException($"Failed to push to remote repository '{repo}'", e);
+            throw new NovugitException($"Failed to push to remote repository", e);
         }
     }
 

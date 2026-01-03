@@ -8,4 +8,5 @@ public interface IRepoService
     Task<ProjectInfo> CreateRemoteRepo(Repos repo);
     Task CreateGitIgnoreFile(ProjectInfo projectInfo);
     Task InitializeLocalGit(Repos repo, ProjectInfo projectInfo);
+    Task PushToRemote();
 }

@@ -21,7 +21,7 @@ public class InitCommand(IRepoService repoService) : AsyncCommand<InitSettings>
         settings.ApplyGlobalOptions();
 
         var currentDir = Environment.CurrentDirectory;
-        if (Directory.Exists(Path.Join(currentDir, ".git")))
+        if (Directory.Exists(Path.Join(currentDir, ".git")) && !settings.OnlyPush)
         {
             var removeRepo = false || settings.Force;
 
@@ -41,10 +41,17 @@ public class InitCommand(IRepoService repoService) : AsyncCommand<InitSettings>
 
         var repoType = Enum.Parse<Repos>(settings.Provider.Capitalize());
 
+        if (settings.OnlyPush)
+        {
+            await repoService.PushToRemote();
+            return 0;
+        }
+
         var projectInfo = await repoService.CreateRemoteRepo(repoType);
 
         await repoService.CreateGitIgnoreFile(projectInfo);
         await repoService.InitializeLocalGit(repoType, projectInfo);
+        await repoService.PushToRemote();
 
         return 0;
     }
