@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using Novugit.Base.Contracts;
 using Spectre.Console.Cli;
 
@@ -6,6 +7,7 @@ namespace Novugit.Commands.ConfigCommands;
 /// <summary>
 /// Command to get a configuration value for a specified provider.
 /// </summary>
+[UsedImplicitly]
 public class ConfigGetCommand(IConfiguration config) : Command<ConfigGetSettings>
 {
     public override int Execute(CommandContext context, ConfigGetSettings settings, CancellationToken cancellationToken)

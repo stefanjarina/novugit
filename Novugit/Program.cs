@@ -1,5 +1,5 @@
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Novugit.API.Services;
 using Novugit.Base;
 using Novugit.Base.Contracts;
@@ -62,6 +62,7 @@ public static class Program
         }
         catch (CommandRuntimeException e) when (e.InnerException is NovugitException ne)
         {
+            Console.WriteLine("WENT IN CommandRuntimeException");
             // Unwrap NovugitException from CommandRuntimeException
             var message = !string.IsNullOrEmpty(ne.Provider)
                 ? $"[{ne.Provider}] {ne.Message}"
@@ -72,6 +73,7 @@ public static class Program
         }
         catch (NovugitException e)
         {
+            Console.WriteLine("WENT IN NovugitException");
             var message = !string.IsNullOrEmpty(e.Provider)
                 ? $"[{e.Provider}] {e.Message}"
                 : e.Message;
@@ -81,6 +83,7 @@ public static class Program
         }
         catch (Exception e)
         {
+            Console.WriteLine("WENT IN Exception");
             ConsoleOutput.WriteError($"Unexpected error: {e.Message}", e);
             return 1;
         }
@@ -88,8 +91,9 @@ public static class Program
 
     private static void ConfigureServices(IServiceCollection serviceCollection)
     {
-        // add logging
-        serviceCollection.AddLogging(config => config.AddConsole());
+        // add data protection
+        serviceCollection.AddDataProtection().SetApplicationName("novugit");
+        serviceCollection.AddSingleton<ISecretService, SecretService>();
 
         // add configuration
         serviceCollection.AddSingleton<IConfiguration, Configuration>();

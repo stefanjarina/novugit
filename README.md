@@ -50,6 +50,7 @@ novugit init github --repo-name myrepo --description "This is my awesome repo"
 - Quality control
   - [x] Check if all errors are properly handled
   - [x] Check if output messages make sense
+  - [x] Encrypt tokens in config file
 - [ ] Add tests
 - [ ] Publish (scoop? Chocolatey? nuget?)
 - And more ideas???

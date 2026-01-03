@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using Novugit.API;
 using Novugit.Base;
 using Novugit.Base.Contracts;
@@ -9,6 +10,7 @@ namespace Novugit.Commands;
 /// <summary>
 /// Command to initialize a new git repository with remote provider.
 /// </summary>
+[UsedImplicitly]
 public class InitCommand(IRepoService repoService) : AsyncCommand<InitSettings>
 {
     public override async Task<int> ExecuteAsync(

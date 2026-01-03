@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using JetBrains.Annotations;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -7,6 +8,7 @@ namespace Novugit.Commands.ConfigCommands;
 /// <summary>
 /// Settings for the config get command.
 /// </summary>
+[UsedImplicitly]
 public class ConfigGetSettings : RepoSettings
 {
     [CommandArgument(1, "<key>")]
@@ -23,11 +25,6 @@ public class ConfigGetSettings : RepoSettings
         }
 
         // Then validate the key
-        if (string.IsNullOrWhiteSpace(Key))
-        {
-            return ValidationResult.Error("Key is required");
-        }
-
-        return ValidationResult.Success();
+        return string.IsNullOrWhiteSpace(Key) ? ValidationResult.Error("Key is required") : ValidationResult.Success();
     }
 }

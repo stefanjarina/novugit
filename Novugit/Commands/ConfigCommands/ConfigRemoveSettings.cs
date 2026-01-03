@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using JetBrains.Annotations;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -7,6 +8,7 @@ namespace Novugit.Commands.ConfigCommands;
 /// <summary>
 /// Settings for the config remove command.
 /// </summary>
+[UsedImplicitly]
 public class ConfigRemoveSettings : RepoSettings
 {
     [CommandArgument(1, "<key>")]

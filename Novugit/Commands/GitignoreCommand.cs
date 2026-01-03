@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using Novugit.API;
 using Novugit.Base;
 using Novugit.Base.Contracts;
@@ -9,6 +10,7 @@ namespace Novugit.Commands;
 /// <summary>
 /// Command to generate .gitignore file from gitignore.io templates.
 /// </summary>
+[UsedImplicitly]
 public class GitignoreCommand(IGitignoreService gitignoreService, IRepoService repoService)
     : AsyncCommand<GitignoreSettings>
 {

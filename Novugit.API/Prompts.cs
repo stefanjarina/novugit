@@ -112,9 +112,9 @@ public static class Prompts
     }
 
     // GENERAL
-    public static bool AskToCreateRemoteRepo()
+    public static bool AskToPushToRemote()
     {
-        var createRemoteRepo = Prompt.Confirm("Do you want to create a remote repository?", defaultValue: true);
+        var createRemoteRepo = Prompt.Confirm("Do you want to push to remote?", defaultValue: true);
 
         return createRemoteRepo;
     }

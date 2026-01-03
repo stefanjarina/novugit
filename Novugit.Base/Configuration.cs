@@ -1,4 +1,5 @@
-﻿﻿using Novugit.Base.Contracts;
+﻿﻿using Microsoft.AspNetCore.DataProtection;
+ using Novugit.Base.Contracts;
 using Novugit.Base.Enums;
 using Novugit.Base.Models;
 using YamlDotNet.Serialization;
@@ -7,12 +8,14 @@ namespace Novugit.Base;
 
 public class Configuration : IConfiguration
 {
+    private readonly ISecretService _secretService;
     private readonly string _configPath;
 
     public Config Config { get; set; }
 
-    public Configuration()
+    public Configuration(ISecretService secretService)
     {
+        _secretService = secretService;
         _configPath = ConstructConfigPath();
 
         // Load Configuration
@@ -29,8 +32,13 @@ public class Configuration : IConfiguration
     {
         return Config.Providers.Find(x => x.Name.Equals(repo.ToString(), StringComparison.InvariantCultureIgnoreCase));
     }
+    
+    public string DecryptToken(string encryptedToken)
+    {
+        return _secretService.Decrypt(encryptedToken);
+    }
 
-    public string GetValue(string providerName, string key)
+    public string GetValue(string providerName, string key, bool decrypt = false)
     {
         var provider = GetProvider(providerName);
         if (provider == null) return "";
@@ -40,18 +48,18 @@ public class Configuration : IConfiguration
         switch (key.ToLower())
         {
             case "token":
-                result = provider.Token;
+                result = decrypt ? _secretService.Decrypt(provider.Token) : provider.Token;
                 break;
             default:
                 if (provider.Options.TryGetValue(key, out var value))
-                    result = value;
+                    result = decrypt ? _secretService.Decrypt(value) : value;
                 break;
         }
 
         return result;
     }
 
-    public void UpdateValue(string providerName, string key, string value)
+    public void UpdateValue(string providerName, string key, string value, bool encrypt = false)
     {
         var provider = GetProvider(providerName);
         if (provider == null) return;
@@ -59,10 +67,10 @@ public class Configuration : IConfiguration
         switch (key.ToLower())
         {
             case "token":
-                provider.Token = value;
+                provider.Token = _secretService.Encrypt(value);
                 break;
             default:
-                provider.Options![key] = value;
+                provider.Options![key] = encrypt ? _secretService.Encrypt(value) : value;
                 break;
         }
 

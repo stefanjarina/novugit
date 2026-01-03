@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using JetBrains.Annotations;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -7,6 +8,7 @@ namespace Novugit.Commands;
 /// <summary>
 /// Settings for the init command.
 /// </summary>
+[UsedImplicitly]
 public class InitSettings : GlobalSettings
 {
     [CommandArgument(0, "<provider>")]

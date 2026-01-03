@@ -14,13 +14,14 @@ public class GitlabService(IConfiguration config) : IGitlabService
     public void Authenticate()
     {
         var provider = config.GetProvider("gitlab");
+        var token = config.DecryptToken(provider.Token);
 
         var baseUrl = provider.BaseUrl.EndsWith('/') ? $"{provider.BaseUrl}api/v4/" : $"{provider.BaseUrl}/api/v4/";
 
         var options = new RestClientOptions(baseUrl)
         {
             ThrowOnDeserializationError = true,
-            Authenticator = new JwtAuthenticator(provider.Token)
+            Authenticator = new JwtAuthenticator(token)
         };
         _client = new RestClient(options);
     }

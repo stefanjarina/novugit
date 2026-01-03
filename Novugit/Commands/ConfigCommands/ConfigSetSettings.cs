@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using JetBrains.Annotations;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -7,6 +8,7 @@ namespace Novugit.Commands.ConfigCommands;
 /// <summary>
 /// Settings for the config set command.
 /// </summary>
+[UsedImplicitly]
 public class ConfigSetSettings : RepoSettings
 {
     [CommandArgument(1, "<key>")]
@@ -16,6 +18,10 @@ public class ConfigSetSettings : RepoSettings
     [CommandArgument(2, "<value>")]
     [Description("Value to set")]
     public string Value { get; init; }
+    
+    [CommandOption("-e|--encrypt")]
+    [Description("Encrypt the value before storing it")]
+    public bool Encrypt { get; init; } = false;
 
     public override ValidationResult Validate()
     {
