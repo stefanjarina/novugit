@@ -42,6 +42,8 @@ novugit init github --repo-name myrepo --description "This is my awesome repo"
   - [x] Gitlab (no good sdk for .net, will need to write own implementation)
   - [x] BitBucket (optional as I am not using it)
   - [x] Azure Devops
+  - [x] Gitea
+  - [x] Forgejo
 - [ ] Add other config files with sane defaults
 - [ ] Add build system (github actions?)
 - Quality control
