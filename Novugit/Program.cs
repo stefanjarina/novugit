@@ -1,43 +1,73 @@
-﻿using McMaster.Extensions.CommandLineUtils;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Novugit.API.Services;
 using Novugit.Base;
 using Novugit.Base.Contracts;
 using Novugit.Commands;
+using Novugit.Commands.ConfigCommands;
+using Spectre.Console.Cli;
+using Spectre.Console.Cli.Extensions.DependencyInjection;
 
 namespace Novugit;
 
 public static class Program
 {
-    public static int Main(string[] args)
+    public static async Task<int> Main(string[] args)
     {
-        // Setup services
-        var serviceCollection = new ServiceCollection();
-        ConfigureServices(serviceCollection);
-        var services = serviceCollection.BuildServiceProvider();
+        // Setup DI
+        var services = new ServiceCollection();
+        ConfigureServices(services);
 
-        var app = new CommandLineApplication<NovugitCmd>();
+        // Cancellation token for Ctrl+C
+        using var cts = new CancellationTokenSource();
+        Console.CancelKeyPress += (_, e) =>
+        {
+            e.Cancel = true;
+            cts.Cancel();
+        };
 
-        app.Conventions
-            .UseDefaultConventions()
-            .UseConstructorInjection(services);
-        
+        // Setup CommandApp with DI
+        using var registrar = new DependencyInjectionRegistrar(services);
+        var app = new CommandApp(registrar);
+
+        app.Configure(config =>
+        {
+            config.SetApplicationName("novugit");
+
+            // Add top-level commands
+            config.AddCommand<InitCommand>("init")
+                .WithDescription("Initialize new repository");
+
+            config.AddCommand<GitignoreCommand>("gitignore")
+                .WithDescription("Generate .gitignore file");
+
+            // Add config branch with subcommands
+            config.AddBranch<ConfigSettings>("config", cfg =>
+            {
+                cfg.SetDescription("Manage configuration");
+                cfg.AddCommand<ConfigGetCommand>("get")
+                    .WithDescription("Get option value for specified repository");
+                cfg.AddCommand<ConfigSetCommand>("set")
+                    .WithDescription("Set token for specified repository");
+                cfg.AddCommand<ConfigRemoveCommand>("remove")
+                    .WithDescription("Remove token for specified repository");
+                cfg.AddCommand<ConfigListAllCommand>("all")
+                    .WithDescription("List whole configuration");
+            });
+        });
+
         try
         {
-            return app.Execute(args);
+            return await app.RunAsync(args, cts.Token);
         }
-        catch (CommandParsingException e)
+        catch (CommandRuntimeException e) when (e.InnerException is NovugitException ne)
         {
-            app.Error.WriteLine(e.Message);
+            // Unwrap NovugitException from CommandRuntimeException
+            var message = !string.IsNullOrEmpty(ne.Provider)
+                ? $"[{ne.Provider}] {ne.Message}"
+                : ne.Message;
 
-            if (e is UnrecognizedCommandParsingException uex && uex.NearestMatches.Any())
-            {
-                app.Error.WriteLine();
-                app.Error.WriteLine("Did you mean this?");
-                app.Error.WriteLine("    " + uex.NearestMatches.First());
-            }
-
+            ConsoleOutput.WriteError($"Error: {message}", ne.InnerException);
             return 1;
         }
         catch (NovugitException e)
@@ -45,7 +75,7 @@ public static class Program
             var message = !string.IsNullOrEmpty(e.Provider)
                 ? $"[{e.Provider}] {e.Message}"
                 : e.Message;
-            
+
             ConsoleOutput.WriteError($"Error: {message}", e.InnerException);
             return 1;
         }
@@ -53,11 +83,6 @@ public static class Program
         {
             ConsoleOutput.WriteError($"Unexpected error: {e.Message}", e);
             return 1;
-        }
-        finally
-        {
-            // Flush logs to the console https://github.com/aspnet/Logging/issues/631
-            services.Dispose();
         }
     }
 
@@ -68,7 +93,7 @@ public static class Program
 
         // add configuration
         serviceCollection.AddSingleton<IConfiguration, Configuration>();
-        
+
 
         // add services
         serviceCollection.AddScoped<IGitignoreService, GitignoreService>();
