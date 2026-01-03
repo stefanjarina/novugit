@@ -153,12 +153,7 @@ public class RepoService(
             config.UpdateValue("azure", "OrgName", org);
         }
 
-        var token = config.GetValue("azure", "token", true);
-        if (string.IsNullOrEmpty(token))
-        {
-            token = Prompts.AskForToken("Azure");
-            config.UpdateValue("azure", "token", token, true);
-        }
+        VerifyInfoFromConfig("azure");
         
         var availableGitignoreConfigs = await GetAvailableGitignoreConfigs();
 
@@ -185,12 +180,7 @@ public class RepoService(
 
     private async Task<ProjectInfo> HandleGithub()
     {
-        var token = config.GetValue("github", "token");
-        if (string.IsNullOrEmpty(token))
-        {
-            token = Prompts.AskForToken("Github");
-            config.UpdateValue("github", "token", token);
-        }
+        VerifyInfoFromConfig("github");
 
         var availableGitignoreConfigs = await GetAvailableGitignoreConfigs();
 
@@ -213,12 +203,7 @@ public class RepoService(
 
     private async Task<ProjectInfo> HandleGitlab()
     {
-        var token = config.GetValue("gitlab", "token");
-        if (string.IsNullOrEmpty(token))
-        {
-            token = Prompts.AskForToken("Gitlab");
-            config.UpdateValue("gitlab", "token", token);
-        }
+        VerifyInfoFromConfig("gitlab");
 
         var availableGitignoreConfigs = await GetAvailableGitignoreConfigs();
 
@@ -244,12 +229,7 @@ public class RepoService(
 
     private async Task<ProjectInfo> HandleBitbucket()
     {
-        var token = config.GetValue("bitbucket", "token");
-        if (string.IsNullOrEmpty(token))
-        {
-            token = Prompts.AskForToken("Bitbucket");
-            config.UpdateValue("bitbucket", "token", token);
-        }
+        VerifyInfoFromConfig("bitbucket");
         
         var availableGitignoreConfigs = await GetAvailableGitignoreConfigs();
 
@@ -287,7 +267,7 @@ public class RepoService(
 
     private async Task<ProjectInfo> HandleGitea()
     {
-        var token = GetToken("gitea");
+        VerifyInfoFromConfig("gitea");
         
         var availableGitignoreConfigs = await GetAvailableGitignoreConfigs();
         
@@ -313,7 +293,7 @@ public class RepoService(
     
     private async Task<ProjectInfo> HandleForgejo()
     {
-        var token = GetToken("forgejo");
+        VerifyInfoFromConfig("forgejo");
         
         var availableGitignoreConfigs = await GetAvailableGitignoreConfigs();
         
@@ -347,19 +327,20 @@ public class RepoService(
         return availableGitignoreConfigs;
     }
 
-    private string GetToken(string provider)
+    private void VerifyInfoFromConfig(string provider)
     {
+        var baseUrl = config.GetValue(provider, "BaseUrl");
+        if (string.IsNullOrEmpty(baseUrl))
+        {
+            baseUrl = Prompts.AskForBaseUrl(provider.ToUpperInvariant());
+            config.UpdateValue(provider, "BaseUrl", baseUrl);
+        }
+        
         var token = config.GetValue(provider, "token");
         if (string.IsNullOrEmpty(token))
         {
             token = Prompts.AskForToken(provider.ToUpperInvariant());
             config.UpdateValue(provider, "token", token, encrypt: true);
         }
-        else
-        {
-            token = config.DecryptToken(token);
-        }
-
-        return token;
     }
 }

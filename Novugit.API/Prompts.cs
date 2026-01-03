@@ -140,6 +140,15 @@ public static class Prompts
 
         return visibility;
     }
+    
+    public static string AskForBaseUrl(string repo)
+    {
+        var validators = new List<Func<object, ValidationResult>> { Validators.Required() };
+
+        var baseUrl = Prompt.Input<string>($"{repo} BaseUrl (e.g. https://github.com)", validators: validators);
+
+        return baseUrl;
+    }
 
     public static string AskForToken(string repo)
     {
