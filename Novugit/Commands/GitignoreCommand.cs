@@ -9,17 +9,9 @@ namespace Novugit.Commands;
 /// <summary>
 /// Command to generate .gitignore file from gitignore.io templates.
 /// </summary>
-public class GitignoreCommand : AsyncCommand<GitignoreSettings>
+public class GitignoreCommand(IGitignoreService gitignoreService, IRepoService repoService)
+    : AsyncCommand<GitignoreSettings>
 {
-    private readonly IGitignoreService _gitignoreService;
-    private readonly IRepoService _repoService;
-
-    public GitignoreCommand(IGitignoreService gitignoreService, IRepoService repoService)
-    {
-        _gitignoreService = gitignoreService;
-        _repoService = repoService;
-    }
-
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         GitignoreSettings settings,
@@ -27,7 +19,7 @@ public class GitignoreCommand : AsyncCommand<GitignoreSettings>
     {
         settings.ApplyGlobalOptions();
 
-        var availableGitignoreConfigs = await _gitignoreService.List();
+        var availableGitignoreConfigs = await gitignoreService.List();
 
         var currentDirInfo = Helpers.GetCurrentDirInfo();
 
@@ -43,7 +35,7 @@ public class GitignoreCommand : AsyncCommand<GitignoreSettings>
             ExcludedLocalFiles = excludedLocalFiles
         };
 
-        await _repoService.CreateGitIgnoreFile(projectInfo);
+        await repoService.CreateGitIgnoreFile(projectInfo);
 
         return 0;
     }
