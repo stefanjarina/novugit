@@ -12,8 +12,9 @@ public class GithubService(IConfiguration config) : IGithubService
     public void Authenticate()
     {
         var provider = config.GetProvider("github");
+        var token = config.DecryptToken(provider.Token);
 
-        var credentials = new Credentials(provider.Token);
+        var credentials = new Credentials(token);
         _client.Credentials = credentials;
     }
 

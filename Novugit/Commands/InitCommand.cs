@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using Novugit.API;
 using Novugit.Base;
 using Novugit.Base.Contracts;
@@ -9,6 +10,7 @@ namespace Novugit.Commands;
 /// <summary>
 /// Command to initialize a new git repository with remote provider.
 /// </summary>
+[UsedImplicitly]
 public class InitCommand(IRepoService repoService) : AsyncCommand<InitSettings>
 {
     public override async Task<int> ExecuteAsync(
@@ -19,7 +21,7 @@ public class InitCommand(IRepoService repoService) : AsyncCommand<InitSettings>
         settings.ApplyGlobalOptions();
 
         var currentDir = Environment.CurrentDirectory;
-        if (Directory.Exists(Path.Join(currentDir, ".git")))
+        if (Directory.Exists(Path.Join(currentDir, ".git")) && !settings.OnlyPush)
         {
             var removeRepo = false || settings.Force;
 
@@ -39,10 +41,17 @@ public class InitCommand(IRepoService repoService) : AsyncCommand<InitSettings>
 
         var repoType = Enum.Parse<Repos>(settings.Provider.Capitalize());
 
+        if (settings.OnlyPush)
+        {
+            await repoService.PushToRemote();
+            return 0;
+        }
+
         var projectInfo = await repoService.CreateRemoteRepo(repoType);
 
         await repoService.CreateGitIgnoreFile(projectInfo);
         await repoService.InitializeLocalGit(repoType, projectInfo);
+        await repoService.PushToRemote();
 
         return 0;
     }

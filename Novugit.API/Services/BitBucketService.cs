@@ -14,13 +14,14 @@ public class BitBucketService(IConfiguration config) : IBitBucketService
     public void Authenticate()
     {
         var provider = config.GetProvider("bitbucket");
+        var token = config.DecryptToken(provider.Token);
         
         var baseUrl = provider.BaseUrl.EndsWith('/') ? $"{provider.BaseUrl}2.0/" : $"{provider.BaseUrl}/2.0/";
         
         var options = new RestClientOptions(baseUrl)
         {
             ThrowOnDeserializationError = true,
-            Authenticator = new HttpBasicAuthenticator(provider.Options["User"], provider.Token)
+            Authenticator = new HttpBasicAuthenticator(provider.Options["User"], token)
         };
         _client = new RestClient(options);
     }

@@ -8,7 +8,8 @@ public interface IConfiguration
     Config Config { get; set; }
     Provider GetProvider(string name);
     Provider GetProvider(Repos repo);
-    string GetValue(string providerName, string key);
-    void UpdateValue(string providerName, string key, string value);
+    string DecryptToken(string encryptedToken);
+    string GetValue(string providerName, string key, bool decrypt = false);
+    void UpdateValue(string providerName, string key, string value, bool encrypt = false);
     void RemoveValue(string providerName, string key);
 }

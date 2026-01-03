@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using JetBrains.Annotations;
 using Spectre.Console;
 using Spectre.Console.Cli;
 
@@ -7,6 +8,7 @@ namespace Novugit.Commands;
 /// <summary>
 /// Settings for the init command.
 /// </summary>
+[UsedImplicitly]
 public class InitSettings : GlobalSettings
 {
     [CommandArgument(0, "<provider>")]
@@ -16,6 +18,10 @@ public class InitSettings : GlobalSettings
     [CommandOption("-f|--force")]
     [Description("Force initialization even if a git repository already exists in the current directory.")]
     public bool Force { get; init; }
+    
+    [CommandOption("--only-push")]
+    [Description("Only push the existing local repository.")]
+    public bool OnlyPush { get; init; }
 
     public override ValidationResult Validate()
     {

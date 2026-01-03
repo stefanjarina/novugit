@@ -73,6 +73,8 @@ public class RepoService(
 
     public async Task InitializeLocalGit(Repos repo, ProjectInfo projectInfo)
     {
+        var defaultBranch = config.Config.DefaultBranch;
+        
         var spinner = new Spinner("Initializing local git...");
         spinner.Start();
 
@@ -92,8 +94,6 @@ public class RepoService(
 
             using var localRepo = new Repository(initFolder);
 
-            var defaultBranch = config.Config.DefaultBranch;
-
             // get git configuration
             var config1 = localRepo.Config;
             var author = config1.BuildSignature(DateTimeOffset.Now);
@@ -108,20 +108,39 @@ public class RepoService(
             _ = localRepo.Network.Remotes["origin"];
 
             // finally push to remote
-            spinner.Succeed("Local git initialized, attempting to push to remote repository...");
+            spinner.Succeed("Local git initialized and configured");
 
-            var pushResult = await Helpers.ExecuteCommandInteractivelyAsync("git", $"push --set-upstream origin {defaultBranch}",
-                "yes");
-
-            if (pushResult)
-            {
-                Console.WriteLine($"✔ Local repository successfully pushed to {repo}");
-            }
+            
         }
         catch (Exception e)
         {
             spinner.Fail($"Unable to initialize git in '{initFolder}'");
             throw new NovugitException($"Failed to initialize local git repository in '{initFolder}'", e);
+        }
+    }
+
+    public async Task PushToRemote()
+    {
+        var defaultBranch = config.Config.DefaultBranch;
+        
+        try
+        {
+            var pushToRemote = Prompts.AskToPushToRemote();
+
+            if (!pushToRemote)
+                return;
+
+            
+            var pushResult = await Helpers.ExecuteCommandInteractivelyAsync("git", $"push --set-upstream origin {defaultBranch}");
+
+            if (pushResult)
+            {
+                ConsoleOutput.WriteSuccess($"Local repository successfully pushed to remote'");
+            }
+        }
+        catch (Exception e)
+        {
+            throw new NovugitException($"Failed to push to remote repository", e);
         }
     }
 
@@ -134,12 +153,7 @@ public class RepoService(
             config.UpdateValue("azure", "OrgName", org);
         }
 
-        var token = config.GetValue("azure", "token");
-        if (string.IsNullOrEmpty(token))
-        {
-            token = Prompts.AskForToken("Azure");
-            config.UpdateValue("azure", "token", token);
-        }
+        VerifyInfoFromConfig("azure");
         
         var availableGitignoreConfigs = await GetAvailableGitignoreConfigs();
 
@@ -166,12 +180,7 @@ public class RepoService(
 
     private async Task<ProjectInfo> HandleGithub()
     {
-        var token = config.GetValue("github", "token");
-        if (string.IsNullOrEmpty(token))
-        {
-            token = Prompts.AskForToken("Github");
-            config.UpdateValue("github", "token", token);
-        }
+        VerifyInfoFromConfig("github");
 
         var availableGitignoreConfigs = await GetAvailableGitignoreConfigs();
 
@@ -194,12 +203,7 @@ public class RepoService(
 
     private async Task<ProjectInfo> HandleGitlab()
     {
-        var token = config.GetValue("gitlab", "token");
-        if (string.IsNullOrEmpty(token))
-        {
-            token = Prompts.AskForToken("Gitlab");
-            config.UpdateValue("gitlab", "token", token);
-        }
+        VerifyInfoFromConfig("gitlab");
 
         var availableGitignoreConfigs = await GetAvailableGitignoreConfigs();
 
@@ -225,12 +229,7 @@ public class RepoService(
 
     private async Task<ProjectInfo> HandleBitbucket()
     {
-        var token = config.GetValue("bitbucket", "token");
-        if (string.IsNullOrEmpty(token))
-        {
-            token = Prompts.AskForToken("Bitbucket");
-            config.UpdateValue("bitbucket", "token", token);
-        }
+        VerifyInfoFromConfig("bitbucket");
         
         var availableGitignoreConfigs = await GetAvailableGitignoreConfigs();
 
@@ -268,12 +267,7 @@ public class RepoService(
 
     private async Task<ProjectInfo> HandleGitea()
     {
-        var token = config.GetValue("gitea", "token");
-        if (string.IsNullOrEmpty(token))
-        {
-            token = Prompts.AskForToken("Gitea");
-            config.UpdateValue("gitea", "token", token);
-        }
+        VerifyInfoFromConfig("gitea");
         
         var availableGitignoreConfigs = await GetAvailableGitignoreConfigs();
         
@@ -299,12 +293,7 @@ public class RepoService(
     
     private async Task<ProjectInfo> HandleForgejo()
     {
-        var token = config.GetValue("forgejo", "token");
-        if (string.IsNullOrEmpty(token))
-        {
-            token = Prompts.AskForToken("Forgejo");
-            config.UpdateValue("forgejo", "token", token);
-        }
+        VerifyInfoFromConfig("forgejo");
         
         var availableGitignoreConfigs = await GetAvailableGitignoreConfigs();
         
@@ -336,5 +325,22 @@ public class RepoService(
         var availableGitignoreConfigs = await gitignoreService.List();
         authSpinner.Succeed("Info successfully fetched");
         return availableGitignoreConfigs;
+    }
+
+    private void VerifyInfoFromConfig(string provider)
+    {
+        var baseUrl = config.GetValue(provider, "BaseUrl");
+        if (string.IsNullOrEmpty(baseUrl))
+        {
+            baseUrl = Prompts.AskForBaseUrl(provider.ToUpperInvariant());
+            config.UpdateValue(provider, "BaseUrl", baseUrl);
+        }
+        
+        var token = config.GetValue(provider, "token");
+        if (string.IsNullOrEmpty(token))
+        {
+            token = Prompts.AskForToken(provider.ToUpperInvariant());
+            config.UpdateValue(provider, "token", token, encrypt: true);
+        }
     }
 }

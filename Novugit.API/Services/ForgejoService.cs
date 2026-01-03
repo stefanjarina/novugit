@@ -14,6 +14,7 @@ public class ForgejoService(IConfiguration config) : IForgejoService
     public void Authenticate()
     {
         var provider = config.GetProvider("forgejo");
+        var token = config.DecryptToken(provider.Token);
 
         var baseUrl = provider.BaseUrl.EndsWith('/') ? $"{provider.BaseUrl}api/v1/" : $"{provider.BaseUrl}/api/v1/";
         
@@ -22,7 +23,7 @@ public class ForgejoService(IConfiguration config) : IForgejoService
             ThrowOnDeserializationError = true,
         };
         _client = new RestClient(options);
-        _client.AddDefaultHeader("Authorization", $"token {provider.Token}");
+        _client.AddDefaultHeader("Authorization", $"token {token}");
     }
 
     public RestClient GetInstance()

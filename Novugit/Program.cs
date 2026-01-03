@@ -1,5 +1,5 @@
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
 using Novugit.API.Services;
 using Novugit.Base;
 using Novugit.Base.Contracts;
@@ -54,6 +54,8 @@ public static class Program
                 cfg.AddCommand<ConfigListAllCommand>("all")
                     .WithDescription("List whole configuration");
             });
+
+            config.PropagateExceptions();
         });
 
         try
@@ -88,8 +90,9 @@ public static class Program
 
     private static void ConfigureServices(IServiceCollection serviceCollection)
     {
-        // add logging
-        serviceCollection.AddLogging(config => config.AddConsole());
+        // add data protection
+        serviceCollection.AddDataProtection().SetApplicationName("novugit");
+        serviceCollection.AddSingleton<ISecretService, SecretService>();
 
         // add configuration
         serviceCollection.AddSingleton<IConfiguration, Configuration>();

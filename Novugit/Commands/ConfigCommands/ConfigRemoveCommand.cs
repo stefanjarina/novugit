@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using Novugit.Base;
 using Novugit.Base.Contracts;
 using Spectre.Console.Cli;
@@ -7,6 +8,7 @@ namespace Novugit.Commands.ConfigCommands;
 /// <summary>
 /// Command to remove a configuration value for a specified provider.
 /// </summary>
+[UsedImplicitly]
 public class ConfigRemoveCommand(IConfiguration config) : Command<ConfigRemoveSettings>
 {
     public override int Execute(CommandContext context, ConfigRemoveSettings settings, CancellationToken cancellationToken)

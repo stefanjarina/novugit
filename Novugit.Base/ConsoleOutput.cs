@@ -36,7 +36,7 @@ public static class ConsoleOutput
     public static void WriteError(string message, Exception exception)
     {
         WriteError(message);
-
+        
         if (!Verbose || exception == null) return;
         
         Console.Error.WriteLine();

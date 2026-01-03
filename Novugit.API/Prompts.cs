@@ -112,9 +112,9 @@ public static class Prompts
     }
 
     // GENERAL
-    public static bool AskToCreateRemoteRepo()
+    public static bool AskToPushToRemote()
     {
-        var createRemoteRepo = Prompt.Confirm("Do you want to create a remote repository?", defaultValue: true);
+        var createRemoteRepo = Prompt.Confirm("Do you want to push to remote?", defaultValue: true);
 
         return createRemoteRepo;
     }
@@ -139,6 +139,15 @@ public static class Prompts
         var visibility = Prompt.Select("Visibility of a repository", items: visibilityOptions, defaultValue: "public");
 
         return visibility;
+    }
+    
+    public static string AskForBaseUrl(string repo)
+    {
+        var validators = new List<Func<object, ValidationResult>> { Validators.Required() };
+
+        var baseUrl = Prompt.Input<string>($"{repo} BaseUrl (e.g. https://github.com)", validators: validators);
+
+        return baseUrl;
     }
 
     public static string AskForToken(string repo)

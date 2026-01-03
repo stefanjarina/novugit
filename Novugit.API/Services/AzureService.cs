@@ -16,8 +16,9 @@ public class AzureService(IConfiguration config) : IAzureService
     public void Authenticate()
     {
         var provider = config.GetProvider("azure");
+        var token = config.DecryptToken(provider.Token);
 
-        var credentials = new VssBasicCredential(string.Empty, provider.Token);
+        var credentials = new VssBasicCredential(string.Empty, token);
 
         _connection = new VssConnection(new Uri($"{provider.BaseUrl}/{provider.Options["OrgName"]}"), credentials);
     }
