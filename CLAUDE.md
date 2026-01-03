@@ -58,10 +58,10 @@ The solution consists of three projects:
 - **Location**: `Novugit/`
 - **Type**: Executable (.NET 10)
 - **Purpose**: Entry point and CLI command definitions
-- **Key Framework**: McMaster.Extensions.CommandLineUtils for command parsing
+- **Key Framework**: Spectre.Console.Cli for command parsing
 - **Key Files**:
   - `Program.cs` - Dependency injection setup and command execution
-  - `Commands/` - Command definitions (InitCmd, ConfigCmd, GitignoreCmd)
+  - `Commands/` - Command and Settings class definitions (InitCommand, GitignoreCommand, ConfigCommands/)
 
 ### 2. Novugit.API
 - **Location**: `Novugit.API/`
@@ -99,12 +99,83 @@ All git platform implementations follow the IProvider interface and have dedicat
 - Implementations live in `Novugit.API/Services/`
 - Services are registered in `Program.cs` ConfigureServices() using dependency injection
 
-### Command Pattern
-Commands use McMaster.Extensions.CommandLineUtils attributes:
-- `[Command]` - Defines command name and description
-- `[Subcommand]` - Defines hierarchical command structure
-- `[Argument]` / `[Option]` - Defines command-line arguments
-- Commands inherit from `GlobalCommandOptionsBase`
+### Command Pattern (Spectre.Console.Cli)
+Commands follow the Command/Settings separation pattern:
+- **Settings classes**: Define CLI interface (arguments, options, validation)
+  - Inherit from `CommandSettings` (or `GlobalSettings` for global options)
+  - Use `[CommandArgument]` and `[CommandOption]` attributes
+  - Override `Validate()` for custom validation logic
+- **Command classes**: Contain execution logic
+  - Implement `Command<TSettings>` (sync) or `AsyncCommand<TSettings>` (async)
+  - Receive settings via `Execute()` or `ExecuteAsync()` method
+  - Use constructor injection for service dependencies
+- **Base classes**:
+  - `GlobalSettings` - Provides --verbose and --no-color options to all commands
+  - `ConfigSettings` - Base for config branch commands
+  - `RepoSettings` - Adds provider argument validation for config subcommands
+
+**Example Command Implementation:**
+```csharp
+// Settings class defines CLI interface
+public class InitSettings : GlobalSettings
+{
+    [CommandArgument(0, "<provider>")]
+    [Description("Git platform provider")]
+    public string Provider { get; init; }
+
+    public override ValidationResult Validate()
+    {
+        var validProviders = new[] { "github", "gitlab", "azure", "bitbucket", "forgejo", "gitea" };
+        if (!validProviders.Contains(Provider?.ToLower()))
+        {
+            return ValidationResult.Error($"Invalid provider '{Provider}'");
+        }
+        return ValidationResult.Success();
+    }
+}
+
+// Command class contains execution logic
+public class InitCommand : AsyncCommand<InitSettings>
+{
+    private readonly IRepoService _repoService;
+
+    public InitCommand(IRepoService repoService)
+    {
+        _repoService = repoService;
+    }
+
+    public override async Task<int> ExecuteAsync(
+        CommandContext context,
+        InitSettings settings,
+        CancellationToken cancellationToken)
+    {
+        settings.ApplyGlobalOptions();
+        var repoType = Enum.Parse<Repos>(settings.Provider.Capitalize());
+        var projectInfo = await _repoService.CreateRemoteRepo(repoType);
+        // ... rest of logic
+        return 0;
+    }
+}
+```
+
+**Command Registration in Program.cs:**
+```csharp
+app.Configure(config =>
+{
+    config.SetApplicationName("novugit");
+
+    config.AddCommand<InitCommand>("init")
+        .WithDescription("Initialize new repository");
+
+    config.AddBranch<ConfigSettings>("config", cfg =>
+    {
+        cfg.SetDescription("Manage configuration");
+        cfg.AddCommand<ConfigGetCommand>("get");
+        cfg.AddCommand<ConfigSetCommand>("set");
+        // ... more subcommands
+    });
+});
+```
 
 ### Configuration Management
 - Config stored as YAML at `~/.config/novugit/config.yml` (Linux/Mac) or `%HOMEDRIVE%%HOMEPATH%\.config\novugit\config.yml` (Windows)
@@ -148,8 +219,12 @@ The main project is configured for single-file, self-contained publishing:
 
 ### Error Handling
 - Custom `NovugitException` for application errors
-- Exception handling in Program.cs Main() catches CommandParsingException and NovugitException
+- Exception handling in Program.cs Main() catches:
+  - `CommandRuntimeException` - Unwraps to check for NovugitException
+  - `NovugitException` - Application-specific errors with optional provider context
+  - Generic `Exception` - Unexpected errors
 - Each service operation wrapped in try-catch with spinner UI feedback
+- Global options (--verbose) control stack trace visibility
 
 ## Configuration File Format
 
@@ -168,3 +243,34 @@ Providers:
 ```
 
 Providers can have custom options stored in the Options dictionary (e.g., Azure stores OrgName).
+
+## Migration History
+
+### 2026-01: McMaster.Extensions.CommandLineUtils → Spectre.Console.Cli
+
+**Reason**: Modernize CLI framework to a more actively maintained library with better patterns and future extensibility.
+
+**Key Changes**:
+- Replaced `McMaster.Extensions.CommandLineUtils v4.1.1` with `Spectre.Console.Cli v0.53.0`
+- Added `Spectre.Console.Cli.Extensions.DependencyInjection v0.18.0` for DI integration
+- Adopted Command/Settings separation pattern:
+  - Settings classes (e.g., `InitSettings`) define CLI interface
+  - Command classes (e.g., `InitCommand`) contain execution logic
+- Changed `Program.Main` from sync to async (`Task<int>`)
+- Replaced attribute-based validation with `ValidationResult Validate()` overrides
+- Updated exception handling to unwrap `CommandRuntimeException`
+- Added `CancellationToken` support for graceful shutdown (Ctrl+C)
+
+**Files Modified**:
+- 1 package reference file (`Novugit.csproj`)
+- 1 core file (`Program.cs`)
+- 15 new files created (Settings + Command classes)
+- 10 old files deleted (McMaster-based commands)
+
+**Breaking Changes**: None - CLI interface remains identical for end users
+
+**Benefits**:
+- Better separation of concerns (CLI definition vs. execution logic)
+- Improved testability (Settings are simple POCOs)
+- Modern async/await patterns with cancellation support
+- Access to Spectre.Console ecosystem for future enhancements (tables, progress bars, etc.)
