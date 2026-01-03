@@ -1,27 +1,29 @@
-﻿using McMaster.Extensions.CommandLineUtils;
-using Microsoft.Extensions.Logging;
+﻿﻿using McMaster.Extensions.CommandLineUtils;
 using System.ComponentModel.DataAnnotations;
+using Novugit.Base;
 using Novugit.Base.Contracts;
 
 namespace Novugit.Commands.ConfigCommands;
 
 [Command(Name = "set", Description = "set token for specified repository")]
-public class SetCmd(IConfiguration config, ILogger<SetCmd> logger) : RepoArgBase
+public class SetCmd(IConfiguration config) : RepoArgBase
 {
     [Argument(1)] [Required] public string Key { get; set; }
     [Argument(2)] [Required] public string Value { get; set; }
 
     protected int OnExecute(CommandLineApplication app)
     {
+        ApplyGlobalOptions(app);
+        
         try
         {
             config.UpdateValue(Repo, Key, Value);
-            Console.WriteLine($"{Key} successfuly set");
+            ConsoleOutput.WriteSuccess($"{Key} successfully set");
             return 0;
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            logger.LogError($"Problem to set config value");
+            ConsoleOutput.WriteError($"Failed to set {Key}: {e.Message}", e);
             return 1;
         }
     }

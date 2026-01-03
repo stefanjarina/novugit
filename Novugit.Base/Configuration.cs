@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Novugit.Base.Contracts;
+﻿﻿using Novugit.Base.Contracts;
 using Novugit.Base.Enums;
 using Novugit.Base.Models;
 using YamlDotNet.Serialization;
@@ -9,14 +8,12 @@ namespace Novugit.Base;
 public class Configuration : IConfiguration
 {
     private readonly string _configPath;
-    private readonly ILogger<Configuration> _logger;
 
     public Config Config { get; set; }
 
-    public Configuration(ILogger<Configuration> logger)
+    public Configuration()
     {
         _configPath = ConstructConfigPath();
-        _logger = logger;
 
         // Load Configuration
         // This creates default config in home folder in case it is not present
@@ -141,10 +138,9 @@ public class Configuration : IConfiguration
         {
             SaveConfig();
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            _logger.LogError("Couldn't create new empty configuration in {}", _configPath);
-            Environment.Exit(-1);
+            throw new NovugitException($"Couldn't create new empty configuration in '{_configPath}'", e);
         }
     }
 

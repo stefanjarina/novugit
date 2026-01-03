@@ -1,4 +1,5 @@
-﻿using Novugit.Base.Contracts;
+﻿﻿using Novugit.Base;
+using Novugit.Base.Contracts;
 using Novugit.Base.Models;
 using Octokit;
 
@@ -36,8 +37,7 @@ public class GithubService(IConfiguration config) : IGithubService
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            throw;
+            throw new NovugitException("Failed to create repository on GitHub", "github", e);
         }
     }
 }

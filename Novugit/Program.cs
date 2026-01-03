@@ -8,9 +8,9 @@ using Novugit.Commands;
 
 namespace Novugit;
 
-public class Program
+public static class Program
 {
-    public static void Main(string[] args)
+    public static int Main(string[] args)
     {
         // Setup services
         var serviceCollection = new ServiceCollection();
@@ -22,10 +22,10 @@ public class Program
         app.Conventions
             .UseDefaultConventions()
             .UseConstructorInjection(services);
-
+        
         try
         {
-            app.Execute(args);
+            return app.Execute(args);
         }
         catch (CommandParsingException e)
         {
@@ -37,11 +37,27 @@ public class Program
                 app.Error.WriteLine("Did you mean this?");
                 app.Error.WriteLine("    " + uex.NearestMatches.First());
             }
+
+            return 1;
+        }
+        catch (NovugitException e)
+        {
+            var message = !string.IsNullOrEmpty(e.Provider)
+                ? $"[{e.Provider}] {e.Message}"
+                : e.Message;
+            
+            ConsoleOutput.WriteError($"Error: {message}", e.InnerException);
+            return 1;
+        }
+        catch (Exception e)
+        {
+            ConsoleOutput.WriteError($"Unexpected error: {e.Message}", e);
+            return 1;
         }
         finally
         {
             // Flush logs to the console https://github.com/aspnet/Logging/issues/631
-            (services as IDisposable)?.Dispose();
+            services.Dispose();
         }
     }
 
@@ -52,6 +68,7 @@ public class Program
 
         // add configuration
         serviceCollection.AddSingleton<IConfiguration, Configuration>();
+        
 
         // add services
         serviceCollection.AddScoped<IGitignoreService, GitignoreService>();

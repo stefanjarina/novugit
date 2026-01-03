@@ -2,10 +2,10 @@
 
 Initialize GIT repository in a folder.
 
-This application automates the manual steps most of people do when creating new repositories
+This application automates the manual steps most of the people do when creating new repositories
 
 - initialize the local repository by running `git init`
-- create a remote repository, for example on Github, Gitlab or Azure - typically by leaving the command line and firing up a web browser
+- create a remote repository, for example on GitHub, Gitlab or Azure - typically by leaving the command line and firing up a web browser
 - add the remote
 - create a `.gitignore` file (either using something like [https://gitignore.io](https://gitignore.io) or by copying their very own custom one)
 - append to `.gitignore` files already in folder (you can choose which ones)
@@ -16,9 +16,10 @@ This application automates the manual steps most of people do when creating new 
 
 ## DISCLAIMER
 
-THIS IS STILL IN PROVE OF CONCEPT AND BEING DEVELOPED
+This is a personal project, currently in early development stage. <br>
+It is NOT ready for public use and is provided AS-IS without any warranties. Use at your own risk.
 
-## Instalation
+## Installation
 
 TBD once app is usable
 
@@ -41,16 +42,16 @@ novugit init github --repo-name myrepo --description "This is my awesome repo"
 - Implement other repositories
   - [x] Gitlab (no good sdk for .net, will need to write own implementation)
   - [x] BitBucket (optional as I am not using it)
-  - [x] Azure Devops
+  - [x] Azure DevOps
   - [x] Gitea
   - [x] Forgejo
 - [ ] Add other config files with sane defaults
-- [ ] Add build system (github actions?)
+- [ ] Add build system (GitHub actions?)
 - Quality control
-  - [ ] Check if all errors are properly handled
-  - [ ] Check if output messages make sense
+  - [x] Check if all errors are properly handled
+  - [x] Check if output messages make sense
 - [ ] Add tests
-- [ ] Publish (scoop? chocolatey? nuget?)
+- [ ] Publish (scoop? Chocolatey? nuget?)
 - And more ideas???
   - [ ] add config functionality for setting "presets" or defaults
   - [ ] add dynamic config files creation (maybe place configs in some folder and they will get picked up by application)

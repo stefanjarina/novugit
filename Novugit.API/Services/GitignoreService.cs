@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.Services.Common;
+﻿﻿using Microsoft.VisualStudio.Services.Common;
+using Novugit.Base;
 using Novugit.Base.Contracts;
 
 namespace Novugit.API.Services;
@@ -12,22 +13,36 @@ public class GitignoreService : IGitignoreService
     {
         IList<string> availableConfigs = new List<string>();
 
-        var response = await _client.GetStringAsync("list");
-
-        foreach (var line in response.Split())
+        try
         {
-            var configs = line.Split(",");
-            availableConfigs.AddRange(configs);
-        }
+            var response = await _client.GetStringAsync("list");
 
-        return availableConfigs;
+            foreach (var line in response.Split())
+            {
+                var configs = line.Split(",");
+                availableConfigs.AddRange(configs);
+            }
+
+            return availableConfigs;
+        }
+        catch (Exception e)
+        {
+            throw new NovugitException("Failed to fetch available gitignore templates from gitignore.io", e);
+        }
     }
 
     public async Task<string> FetchConfig(IEnumerable<string> configs)
     {
-        var query = string.Join(",", configs);
-        var response = await _client.GetStringAsync(query);
+        try
+        {
+            var query = string.Join(",", configs);
+            var response = await _client.GetStringAsync(query);
 
-        return response;
+            return response;
+        }
+        catch (Exception e)
+        {
+            throw new NovugitException("Failed to fetch gitignore configuration from gitignore.io", e);
+        }
     }
 }

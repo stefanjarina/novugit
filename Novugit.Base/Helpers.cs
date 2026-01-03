@@ -1,4 +1,4 @@
-﻿using System.Text;
+﻿﻿using System.Text;
 using CliWrap;
 using Novugit.Base.Models;
 using YamlDotNet.Serialization;
@@ -54,6 +54,6 @@ public static class Helpers
                 )
             .ExecuteAsync();
         
-        return result.ExitCode == 0 ? true : throw new Exception();
+        return result.ExitCode != 0 ? throw new NovugitException($"Command '{cmdName} {args}' failed with exit code {result.ExitCode}") : true;
     }
 }

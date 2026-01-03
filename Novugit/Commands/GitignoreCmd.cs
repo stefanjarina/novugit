@@ -1,4 +1,4 @@
-﻿using McMaster.Extensions.CommandLineUtils;
+﻿﻿using McMaster.Extensions.CommandLineUtils;
 using Novugit.API;
 using Novugit.Base;
 using Novugit.Base.Contracts;
@@ -7,10 +7,12 @@ using Novugit.Base.Models;
 namespace Novugit.Commands;
 
 [Command(Name = "gitignore", Description = "Generate .gitignore file")]
-public class GitignoreCmd(IGitignoreService gitignoreService, IRepoService repoService)
+public class GitignoreCmd(IGitignoreService gitignoreService, IRepoService repoService) : GlobalCommandOptionsBase
 {
     protected async Task<int> OnExecute(CommandLineApplication app)
     {
+        ApplyGlobalOptions(app);
+        
         var availableGitignoreConfigs = await gitignoreService.List();
 
         var currentDirInfo = Helpers.GetCurrentDirInfo();

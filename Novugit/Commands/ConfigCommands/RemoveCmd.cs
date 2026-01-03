@@ -1,26 +1,28 @@
-﻿using McMaster.Extensions.CommandLineUtils;
-using Microsoft.Extensions.Logging;
+﻿﻿using McMaster.Extensions.CommandLineUtils;
 using System.ComponentModel.DataAnnotations;
+using Novugit.Base;
 using Novugit.Base.Contracts;
 
 namespace Novugit.Commands.ConfigCommands;
 
 [Command(Name = "remove", Description = "remove token for specified repository")]
-public class RemoveCmd(IConfiguration config, ILogger<RemoveCmd> logger) : RepoArgBase
+public class RemoveCmd(IConfiguration config) : RepoArgBase
 {
     [Argument(1)] [Required] public string Key { get; set; }
 
     protected int OnExecute(CommandLineApplication app)
     {
+        ApplyGlobalOptions(app);
+        
         try
         {
             config.RemoveValue(Repo, Key);
-            Console.WriteLine($"Token successfuly removed");
+            ConsoleOutput.WriteSuccess("Token successfully removed");
             return 0;
         }
-        catch (Exception)
+        catch (Exception e)
         {
-            logger.LogError($"Problem to remove token");
+            ConsoleOutput.WriteError($"Failed to remove {Key}: {e.Message}", e);
             return 1;
         }
     }

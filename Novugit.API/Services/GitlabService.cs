@@ -1,4 +1,5 @@
-﻿using Novugit.Base.Contracts;
+﻿﻿using Novugit.Base;
+using Novugit.Base.Contracts;
 using Novugit.Base.Models;
 using Novugit.Base.Models.Gitlab;
 using RestSharp;
@@ -48,8 +49,7 @@ public class GitlabService(IConfiguration config) : IGitlabService
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            throw;
+            throw new NovugitException("Failed to create repository on GitLab", "gitlab", e);
         }
     }
 
@@ -80,8 +80,7 @@ public class GitlabService(IConfiguration config) : IGitlabService
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            throw;
+            throw new NovugitException("Failed to fetch groups from GitLab", "gitlab", e);
         }
     }
 }

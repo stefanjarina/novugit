@@ -3,12 +3,10 @@ using McMaster.Extensions.CommandLineUtils;
 
 namespace Novugit.Commands;
 
-public abstract class RepoArgBase
+public abstract class RepoArgBase : GlobalCommandOptionsBase
 {
     [Required]
     [Argument(0)]
-    [McMaster.Extensions.CommandLineUtils.AllowedValues(
-        "github", "gitlab", "azure", "bitbucket", "forgejo", "gitea",
-        IgnoreCase = true)]
+    [McMaster.Extensions.CommandLineUtils.AllowedValues("github", "gitlab", "azure", "bitbucket", "forgejo", "gitea", IgnoreCase = true)]
     public string Repo { get; init; }
 }

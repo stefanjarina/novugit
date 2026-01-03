@@ -1,4 +1,5 @@
-﻿using Novugit.Base.Contracts;
+﻿﻿using Novugit.Base;
+using Novugit.Base.Contracts;
 using Novugit.Base.Models;
 using Novugit.Base.Models.gitea;
 using RestSharp;
@@ -53,8 +54,7 @@ public class GiteaService(IConfiguration config) : IGiteaService
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            throw;
+            throw new NovugitException("Failed to create repository on Gitea", "gitea", e);
         }
     }
 

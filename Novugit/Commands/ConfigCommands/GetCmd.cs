@@ -1,4 +1,4 @@
-﻿using McMaster.Extensions.CommandLineUtils;
+﻿﻿using McMaster.Extensions.CommandLineUtils;
 using System.ComponentModel.DataAnnotations;
 using Novugit.Base.Contracts;
 
@@ -11,6 +11,8 @@ public class GetCmd(IConfiguration config) : RepoArgBase
 
     protected int OnExecute(CommandLineApplication app)
     {
+        ApplyGlobalOptions(app);
+        
         Console.WriteLine($"Configuration for '{Repo}'");
         var token = config.GetValue(Repo, Key);
         Console.WriteLine($"Token: {token}");

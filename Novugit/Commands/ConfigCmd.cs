@@ -1,4 +1,4 @@
-﻿using McMaster.Extensions.CommandLineUtils;
+﻿﻿using McMaster.Extensions.CommandLineUtils;
 using Novugit.Commands.ConfigCommands;
 
 namespace Novugit.Commands;
@@ -8,10 +8,11 @@ namespace Novugit.Commands;
 [Subcommand(typeof(ListAllCmd))]
 [Subcommand(typeof(SetCmd))]
 [Subcommand(typeof(RemoveCmd))]
-public class ConfigCmd
+public class ConfigCmd : GlobalCommandOptionsBase
 {
     protected int OnExecute(CommandLineApplication app)
     {
+        ApplyGlobalOptions(app);
         app.ShowHelp();
         return 0;
     }

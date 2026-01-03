@@ -1,4 +1,4 @@
-﻿using Kurukuru;
+﻿﻿using Kurukuru;
 using LibGit2Sharp;
 using Novugit.Base;
 using Novugit.Base.Contracts;
@@ -65,8 +65,7 @@ public class RepoService(
         catch (Exception e)
         {
             spinner.Fail("Unable to create .gitignore file");
-            Console.WriteLine(e);
-            throw;
+            throw new NovugitException("Failed to create .gitignore file", e);
         }
 
         spinner.Succeed(".gitignore file created");
@@ -122,8 +121,7 @@ public class RepoService(
         catch (Exception e)
         {
             spinner.Fail($"Unable to initialize git in '{initFolder}'");
-            Console.WriteLine(e);
-            throw;
+            throw new NovugitException($"Failed to initialize local git repository in '{initFolder}'", e);
         }
     }
 

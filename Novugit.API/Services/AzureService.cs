@@ -1,7 +1,8 @@
-﻿using Microsoft.TeamFoundation.Core.WebApi;
+﻿﻿using Microsoft.TeamFoundation.Core.WebApi;
 using Microsoft.TeamFoundation.SourceControl.WebApi;
 using Microsoft.VisualStudio.Services.Common;
 using Microsoft.VisualStudio.Services.WebApi;
+using Novugit.Base;
 using Novugit.Base.Contracts;
 using Novugit.Base.Models;
 using ProjectInfo = Novugit.Base.Models.ProjectInfo;
@@ -45,12 +46,10 @@ public class AzureService(IConfiguration config) : IAzureService
         {
             if (e.Message == $"TF400948: A Git repository with the name {projectInfo.Name} already exists.")
             {
-                Console.WriteLine($"A Git repository with the name {projectInfo.Name} already exists. Exiting...");
-                Environment.Exit(1);
+                throw new NovugitException($"A Git repository with the name '{projectInfo.Name}' already exists", "azure", e);
             }
 
-            Console.WriteLine(e);
-            throw;
+            throw new NovugitException("Failed to create repository on Azure DevOps", "azure", e);
         }
     }
 
