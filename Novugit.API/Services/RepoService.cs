@@ -50,7 +50,7 @@ public class RepoService(
             {
                 gitignoreString += "# CUSTOM SETTINGS\n\n";
                 gitignoreString = projectInfo.ExcludedLocalFiles.Aggregate(gitignoreString,
-                    (current, excludedLocalFile) => current + excludedLocalFile);
+                    (current, excludedLocalFile) => current + excludedLocalFile + "\n");
                 gitignoreString += "\n";
             }
 

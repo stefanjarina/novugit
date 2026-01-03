@@ -162,7 +162,7 @@ public static class Prompts
 
     public static (IEnumerable<string>, IEnumerable<string>) AskForGitignoreDetails(CurrentDirectoryInfo currentDirectoryInfo, IEnumerable<string> availableGitignoreConfigs)
     {
-        var localExcludeList = currentDirectoryInfo.Files.Concat(currentDirectoryInfo.Directories).ToList();
+        var localExcludeList = currentDirectoryInfo.Files.Concat(currentDirectoryInfo.Directories.Select(x => $"{x}/")).ToList();
 
         IEnumerable<string> gitIgnoreConfigs = Array.Empty<string>();
         IEnumerable<string> excludedLocalFiles = Array.Empty<string>();
