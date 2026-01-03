@@ -27,8 +27,6 @@ public static class ConsoleOutput
     /// </summary>
     public static void WriteError(string message)
     {
-        WriteColored("VERBOSE IS: " + Verbose, ConsoleColor.Red, Console.Out);
-        
         WriteColored(message, ConsoleColor.Red, Console.Error);
     }
 
@@ -37,10 +35,8 @@ public static class ConsoleOutput
     /// </summary>
     public static void WriteError(string message, Exception exception)
     {
-        WriteInfo(message);
+        WriteError(message);
         
-        WriteColored("VERBOSE IS: " + Verbose, ConsoleColor.Red, Console.Out);
-
         if (!Verbose || exception == null) return;
         
         Console.Error.WriteLine();

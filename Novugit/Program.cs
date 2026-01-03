@@ -54,6 +54,8 @@ public static class Program
                 cfg.AddCommand<ConfigListAllCommand>("all")
                     .WithDescription("List whole configuration");
             });
+
+            config.PropagateExceptions();
         });
 
         try
@@ -62,7 +64,6 @@ public static class Program
         }
         catch (CommandRuntimeException e) when (e.InnerException is NovugitException ne)
         {
-            Console.WriteLine("WENT IN CommandRuntimeException");
             // Unwrap NovugitException from CommandRuntimeException
             var message = !string.IsNullOrEmpty(ne.Provider)
                 ? $"[{ne.Provider}] {ne.Message}"
@@ -73,7 +74,6 @@ public static class Program
         }
         catch (NovugitException e)
         {
-            Console.WriteLine("WENT IN NovugitException");
             var message = !string.IsNullOrEmpty(e.Provider)
                 ? $"[{e.Provider}] {e.Message}"
                 : e.Message;
@@ -83,7 +83,6 @@ public static class Program
         }
         catch (Exception e)
         {
-            Console.WriteLine("WENT IN Exception");
             ConsoleOutput.WriteError($"Unexpected error: {e.Message}", e);
             return 1;
         }
