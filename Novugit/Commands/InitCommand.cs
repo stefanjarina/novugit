@@ -1,3 +1,4 @@
+using Novugit.API;
 using Novugit.Base;
 using Novugit.Base.Contracts;
 using Novugit.Base.Enums;
@@ -8,15 +9,8 @@ namespace Novugit.Commands;
 /// <summary>
 /// Command to initialize a new git repository with remote provider.
 /// </summary>
-public class InitCommand : AsyncCommand<InitSettings>
+public class InitCommand(IRepoService repoService) : AsyncCommand<InitSettings>
 {
-    private readonly IRepoService _repoService;
-
-    public InitCommand(IRepoService repoService)
-    {
-        _repoService = repoService;
-    }
-
     public override async Task<int> ExecuteAsync(
         CommandContext context,
         InitSettings settings,
@@ -27,16 +21,28 @@ public class InitCommand : AsyncCommand<InitSettings>
         var currentDir = Environment.CurrentDirectory;
         if (Directory.Exists(Path.Join(currentDir, ".git")))
         {
-            ConsoleOutput.WriteWarning("Already a git repository, exiting...");
-            return 0;
+            var removeRepo = false || settings.Force;
+
+            if (!removeRepo)
+                removeRepo = Prompts.AskToDeleteCurrentLocalRepo();
+            
+            if (removeRepo)
+            {
+                Directory.Delete(Path.Join(currentDir, ".git"), true);
+            }
+            else
+            {
+                ConsoleOutput.WriteError("Operation cancelled. Existing git repository found.");
+                return 0;
+            }
         }
 
         var repoType = Enum.Parse<Repos>(settings.Provider.Capitalize());
 
-        var projectInfo = await _repoService.CreateRemoteRepo(repoType);
+        var projectInfo = await repoService.CreateRemoteRepo(repoType);
 
-        await _repoService.CreateGitIgnoreFile(projectInfo);
-        await _repoService.InitializeLocalGit(repoType, projectInfo);
+        await repoService.CreateGitIgnoreFile(projectInfo);
+        await repoService.InitializeLocalGit(repoType, projectInfo);
 
         return 0;
     }

@@ -112,6 +112,20 @@ public static class Prompts
     }
 
     // GENERAL
+    public static bool AskToCreateRemoteRepo()
+    {
+        var createRemoteRepo = Prompt.Confirm("Do you want to create a remote repository?", defaultValue: true);
+
+        return createRemoteRepo;
+    }
+    
+    public static bool AskToDeleteCurrentLocalRepo()
+    {
+        var deleteLocalRepo = Prompt.Confirm("Already a git repository, do you want to proceed anyway?", defaultValue: false);
+
+        return deleteLocalRepo;
+    }
+    
     public static string AskForVisibility(Repos repo)
     {
         var visibilityOptions = new[] { "private", "public" };
