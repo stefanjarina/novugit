@@ -346,11 +346,11 @@ public class RepoService(
 
     private void VerifyInfoFromConfig(string provider)
     {
-        var baseUrl = config.GetValue(provider, "BaseUrl");
+        var baseUrl = config.GetValue(provider, "baseurl");
         if (string.IsNullOrEmpty(baseUrl))
         {
             baseUrl = Prompts.AskForBaseUrl(provider.ToUpperInvariant());
-            config.UpdateValue(provider, "BaseUrl", baseUrl);
+            config.UpdateValue(provider, "baseurl", baseUrl);
         }
         
         var token = config.GetValue(provider, "token");

@@ -50,6 +50,9 @@ public class Configuration : IConfiguration
             case "token":
                 result = decrypt ? _secretService.Decrypt(provider.Token) : provider.Token;
                 break;
+            case "baseurl":
+                result = provider.BaseUrl;
+                break;
             default:
                 if (provider.Options.TryGetValue(key, out var value))
                     result = decrypt ? _secretService.Decrypt(value) : value;
@@ -69,6 +72,9 @@ public class Configuration : IConfiguration
             case "token":
                 provider.Token = _secretService.Encrypt(value);
                 break;
+            case "baseurl":
+                provider.BaseUrl = value;
+                break;
             default:
                 provider.Options![key] = encrypt ? _secretService.Encrypt(value) : value;
                 break;
@@ -86,6 +92,9 @@ public class Configuration : IConfiguration
         {
             case "token":
                 provider.Token = "";
+                break;
+            case "baseurl":
+                provider.BaseUrl = "";
                 break;
             default:
                 provider.Options!.Remove(key!);
