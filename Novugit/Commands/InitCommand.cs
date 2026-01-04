@@ -21,7 +21,7 @@ public class InitCommand(IRepoService repoService) : AsyncCommand<InitSettings>
         settings.ApplyGlobalOptions();
 
         var currentDir = Environment.CurrentDirectory;
-        if (Directory.Exists(Path.Join(currentDir, ".git")) && !settings.OnlyPush)
+        if (Directory.Exists(Path.Join(currentDir, ".git")) && !settings.OnlyPush && !settings.OnlyRemote)
         {
             var removeRepo = false || settings.Force;
 
@@ -38,6 +38,11 @@ public class InitCommand(IRepoService repoService) : AsyncCommand<InitSettings>
                 return 0;
             }
         }
+        
+        if (Directory.Exists(Path.Join(currentDir, ".git")) && (settings.OnlyPush || settings.OnlyRemote))
+        {
+            ConsoleOutput.WriteInfo("Existing git repository found. --only-* option detected. Proceeding with the operation.");
+        }
 
         var repoType = Enum.Parse<Repos>(settings.Provider.Capitalize());
 
@@ -50,7 +55,12 @@ public class InitCommand(IRepoService repoService) : AsyncCommand<InitSettings>
         var projectInfo = await repoService.CreateRemoteRepo(repoType);
 
         await repoService.CreateGitIgnoreFile(projectInfo);
-        await repoService.InitializeLocalGit(repoType, projectInfo);
+
+        if (!settings.OnlyRemote)
+            await repoService.InitializeLocalGit(repoType, projectInfo);
+
+        await repoService.CreateRemote(projectInfo.RemoteUrl);
+
         await repoService.PushToRemote();
 
         return 0;

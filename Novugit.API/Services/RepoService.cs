@@ -103,19 +103,36 @@ public class RepoService(
             Commands.Stage(localRepo, "*");
             localRepo.Commit("initial commit", author, author);
 
-            // configure remote
-            localRepo.Network.Remotes.Add("origin", projectInfo.RemoteUrl);
-            _ = localRepo.Network.Remotes["origin"];
-
-            // finally push to remote
-            spinner.Succeed("Local git initialized and configured");
-
-            
+            spinner.Succeed("Local git initialized");
         }
         catch (Exception e)
         {
             spinner.Fail($"Unable to initialize git in '{initFolder}'");
             throw new NovugitException($"Failed to initialize local git repository in '{initFolder}'", e);
+        }
+    }
+
+    public async Task CreateRemote(string remoteUrl)
+    {
+        var initFolder = Environment.CurrentDirectory;
+
+        var spinner = new Spinner("Configuring remote...");
+
+        try
+        {
+            spinner.Start();
+
+            using var localRepo = new Repository(initFolder);
+
+            localRepo.Network.Remotes.Add("origin", remoteUrl);
+            _ = localRepo.Network.Remotes["origin"];
+
+            spinner.Succeed("Remote configured");
+        }
+        catch (Exception e)
+        {
+            spinner.Fail($"Unable to configure remote in '{initFolder}'");
+            throw new NovugitException($"Failed to configure remote in '{initFolder}'", e);
         }
     }
 

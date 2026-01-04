@@ -18,7 +18,11 @@ public class InitSettings : GlobalSettings
     [CommandOption("-f|--force")]
     [Description("Force initialization even if a git repository already exists in the current directory.")]
     public bool Force { get; init; }
-    
+
+    [CommandOption("--only-remote")]
+    [Description("Do not create a local repository, only create the remote repository.")]
+    public bool OnlyRemote { get; init; }
+
     [CommandOption("--only-push")]
     [Description("Only push the existing local repository.")]
     public bool OnlyPush { get; init; }
