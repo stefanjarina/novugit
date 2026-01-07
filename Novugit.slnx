@@ -9,11 +9,11 @@
   <Project Path="Novugit/Novugit.csproj" />
 
   <Folder Name="/Solution Items/">
-      <File Path=".editorconfig" />
-      <File Path=".gitignore" />
+    <File Path=".editorconfig" />
+    <File Path=".gitignore" />
     <File Path="CLAUDE.md" />
-      <File Path="global.json" />
-      <File Path="README.md" />
-      <File Path="Taskfile.yml" />
+    <File Path="global.json" />
+    <File Path="README.md" />
+    <File Path="Taskfile.yml" />
   </Folder>
 </Solution>

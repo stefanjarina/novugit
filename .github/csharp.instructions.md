@@ -6,7 +6,7 @@ applyTo: '**/*.cs'
 # C# Development
 
 ## C# Instructions
-- Always use the latest version C# currently C# 13 features.
+- Always use the latest version C# currently C# 14 features.
 - Write clear and concise comments for each function.
 
 ## General Instructions
@@ -87,7 +87,10 @@ applyTo: '**/*.cs'
 
 ## Testing
 
-- Use NUnit for unit testing and integration testing.
+- Use TUnit for unit testing and integration testing.
+- New test projects should follow the naming convention: `ProjectName.Tests`.
+- New test project can be created using the command: `dotnet new tunit -n ProjectName.Tests`.
+- This project can be then added to the solution using: `dotnet sln add ./ProjectName.Tests/ProjectName.Tests.csproj`.
 - Always include test cases for critical paths of the application.
 - Guide users through creating unit tests.
 - Do not emit "Act", "Arrange" or "Assert" comments.
