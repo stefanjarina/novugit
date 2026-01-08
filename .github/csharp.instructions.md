@@ -89,7 +89,7 @@ applyTo: '**/*.cs'
 
 - Use TUnit for unit testing and integration testing.
 - New test projects should follow the naming convention: `ProjectName.Tests`.
-- New test project can be created using the command: `dotnet new tunit -n ProjectName.Tests`.
+- New test project can be created using the command: `dotnet new TUnit -n ProjectName.Tests`.
 - This project can be then added to the solution using: `dotnet sln add ./ProjectName.Tests/ProjectName.Tests.csproj`.
 - Always include test cases for critical paths of the application.
 - Guide users through creating unit tests.
