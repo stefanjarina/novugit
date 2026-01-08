@@ -6,6 +6,7 @@
   </Configurations>
   <Project Path="Novugit.API/Novugit.API.csproj" />
   <Project Path="Novugit.Base/Novugit.Base.csproj" />
+  <Project Path="Novugit.Base.Tests/Novugit.Base.Tests.csproj" />
   <Project Path="Novugit/Novugit.csproj" />
 
   <Folder Name="/Solution Items/">
