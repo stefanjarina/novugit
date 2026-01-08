@@ -106,7 +106,7 @@ public class HelpersTests
   public async Task ConvertObjectToYaml_WithNullValue_ReturnsYamlString()
   {
     // Arrange
-    var obj = new { Name = "test", NullValue = (string)null };
+    var obj = new { Name = "test", NullValue = (string?)null };
 
     // Act
     var result = Helpers.ConvertObjectToYaml(obj);

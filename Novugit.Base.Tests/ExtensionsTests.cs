@@ -73,7 +73,7 @@ public class ExtensionsTests
   public async Task Capitalize_WithNull_ReturnsNull()
   {
     // Arrange
-    string input = null;
+    string? input = null;
 
     // Act
     var result = input.Capitalize();

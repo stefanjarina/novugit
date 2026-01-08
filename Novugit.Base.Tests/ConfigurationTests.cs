@@ -8,9 +8,9 @@ namespace Novugit.Base.Tests;
 [NotInParallel("Configuration")]
 public class ConfigurationTests : IAsyncDisposable
 {
-  private string _tempConfigPath;
-  private string _tempConfigDir;
-  private ISecretService _secretService;
+  private string _tempConfigPath = null!;
+  private string _tempConfigDir = null!;
+  private ISecretService _secretService = null!;
 
   [Before(Test)]
   public void Setup()

@@ -108,7 +108,7 @@ public class NovugitExceptionTests
   public async Task NovugitException_CanBeCaughtAsException()
   {
     // Arrange
-    Exception caughtException = null;
+    Exception? caughtException = null;
 
     // Act
     try
