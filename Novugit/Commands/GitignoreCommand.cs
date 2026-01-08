@@ -8,37 +8,47 @@ using Spectre.Console.Cli;
 namespace Novugit.Commands;
 
 /// <summary>
+/// Settings for the gitignore command.
+/// No arguments needed - just inherits global options.
+/// </summary>
+[UsedImplicitly]
+public class GitignoreSettings : GlobalSettings
+{
+  // No additional properties - command takes no arguments
+}
+
+/// <summary>
 /// Command to generate .gitignore file from gitignore.io templates.
 /// </summary>
 [UsedImplicitly]
 public class GitignoreCommand(IGitignoreService gitignoreService, IRepoService repoService)
     : AsyncCommand<GitignoreSettings>
 {
-    public override async Task<int> ExecuteAsync(
-        CommandContext context,
-        GitignoreSettings settings,
-        CancellationToken cancellationToken)
+  public override async Task<int> ExecuteAsync(
+      CommandContext context,
+      GitignoreSettings settings,
+      CancellationToken cancellationToken)
+  {
+    settings.ApplyGlobalOptions();
+
+    var availableGitignoreConfigs = await gitignoreService.List();
+
+    var currentDirInfo = Helpers.GetCurrentDirInfo();
+
+    var (gitIgnoreConfigs, excludedLocalFiles) =
+        Prompts.AskForGitignoreDetails(currentDirInfo, availableGitignoreConfigs);
+
+    var projectInfo = new ProjectInfo
     {
-        settings.ApplyGlobalOptions();
+      Name = null,
+      Description = null,
+      Visibility = null,
+      GitIgnoreConfigs = gitIgnoreConfigs,
+      ExcludedLocalFiles = excludedLocalFiles
+    };
 
-        var availableGitignoreConfigs = await gitignoreService.List();
+    await repoService.CreateGitIgnoreFile(projectInfo);
 
-        var currentDirInfo = Helpers.GetCurrentDirInfo();
-
-        var (gitIgnoreConfigs, excludedLocalFiles) =
-            Prompts.AskForGitignoreDetails(currentDirInfo, availableGitignoreConfigs);
-
-        var projectInfo = new ProjectInfo
-        {
-            Name = null,
-            Description = null,
-            Visibility = null,
-            GitIgnoreConfigs = gitIgnoreConfigs,
-            ExcludedLocalFiles = excludedLocalFiles
-        };
-
-        await repoService.CreateGitIgnoreFile(projectInfo);
-
-        return 0;
-    }
+    return 0;
+  }
 }
