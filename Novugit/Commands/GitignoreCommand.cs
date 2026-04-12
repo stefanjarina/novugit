@@ -24,7 +24,7 @@ public class GitignoreSettings : GlobalSettings
 public class GitignoreCommand(IGitignoreService gitignoreService, IRepoService repoService)
     : AsyncCommand<GitignoreSettings>
 {
-  public override async Task<int> ExecuteAsync(
+  protected override async Task<int> ExecuteAsync(
       CommandContext context,
       GitignoreSettings settings,
       CancellationToken cancellationToken)

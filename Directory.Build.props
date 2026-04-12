@@ -1,0 +1,9 @@
+<Project>
+
+  <PropertyGroup>
+    <!-- Sharprompt's source generator targets a newer Roslyn than the current SDK provides.
+         The generator is optional; suppress the resulting analyzer-skipped warning. -->
+    <NoWarn>$(NoWarn);CS9057</NoWarn>
+  </PropertyGroup>
+
+</Project>

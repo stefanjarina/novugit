@@ -28,7 +28,7 @@ public class ConsoleOutputTests
     ConsoleOutput.NoColor = true;
 
     // Assert
-    await Assert.That(ConsoleOutput.NoColor).IsEqualTo(true);
+    await Assert.That(ConsoleOutput.NoColor).IsTrue();
   }
 
   [Test]
@@ -38,7 +38,7 @@ public class ConsoleOutputTests
     ConsoleOutput.NoColor = false;
 
     // Assert
-    await Assert.That(ConsoleOutput.NoColor).IsEqualTo(false);
+    await Assert.That(ConsoleOutput.NoColor).IsFalse();
   }
 
   [Test]
@@ -48,7 +48,7 @@ public class ConsoleOutputTests
     ConsoleOutput.Verbose = false;
 
     // Assert
-    await Assert.That(ConsoleOutput.Verbose).IsEqualTo(false);
+    await Assert.That(ConsoleOutput.Verbose).IsFalse();
   }
 
   [Test]
@@ -58,7 +58,7 @@ public class ConsoleOutputTests
     ConsoleOutput.Verbose = true;
 
     // Assert
-    await Assert.That(ConsoleOutput.Verbose).IsEqualTo(true);
+    await Assert.That(ConsoleOutput.Verbose).IsTrue();
   }
 
   [Test]

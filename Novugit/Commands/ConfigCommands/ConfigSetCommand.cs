@@ -55,7 +55,7 @@ public class ConfigSetSettings : RepoSettings
 [UsedImplicitly]
 public class ConfigSetCommand(IConfiguration config) : Command<ConfigSetSettings>
 {
-  public override int Execute(CommandContext context, ConfigSetSettings settings, CancellationToken cancellationToken)
+  protected override int Execute(CommandContext context, ConfigSetSettings settings, CancellationToken cancellationToken)
   {
     settings.ApplyGlobalOptions();
 

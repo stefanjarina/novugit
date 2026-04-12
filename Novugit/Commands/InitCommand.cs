@@ -42,8 +42,8 @@ public class InitSettings : GlobalSettings
 /// </summary>
 [UsedImplicitly]
 public class InitCommand(IRepoService repoService) : AsyncCommand<InitSettings>
-{
-  public override async Task<int> ExecuteAsync(
+{ 
+  protected override async Task<int> ExecuteAsync(
       CommandContext context,
       InitSettings settings,
       CancellationToken cancellationToken)

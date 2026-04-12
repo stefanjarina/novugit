@@ -21,7 +21,7 @@ public class ConfigListAllSettings : ConfigSettings
 [UsedImplicitly]
 public class ConfigListAllCommand(IConfiguration config) : Command<ConfigListAllSettings>
 {
-  public override int Execute(CommandContext context, ConfigListAllSettings settings, CancellationToken cancellationToken)
+  protected override int Execute(CommandContext context, ConfigListAllSettings settings, CancellationToken cancellationToken)
   {
     settings.ApplyGlobalOptions();
 

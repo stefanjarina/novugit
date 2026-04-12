@@ -42,7 +42,7 @@ public class ConfigRemoveSettings : RepoSettings
 [UsedImplicitly]
 public class ConfigRemoveCommand(IConfiguration config) : Command<ConfigRemoveSettings>
 {
-  public override int Execute(CommandContext context, ConfigRemoveSettings settings, CancellationToken cancellationToken)
+  protected override int Execute(CommandContext context, ConfigRemoveSettings settings, CancellationToken cancellationToken)
   {
     settings.ApplyGlobalOptions();
 

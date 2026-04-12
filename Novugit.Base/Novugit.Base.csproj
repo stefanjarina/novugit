@@ -17,6 +17,10 @@
     <PackageReference Include="RestSharp" />
     <PackageReference Include="YamlDotNet" />
 
+    <PackageReference Include="System.Configuration.ConfigurationManager" />
+    <PackageReference Include="System.Drawing.Common" />
+    <PackageReference Include="System.Security.Cryptography.Xml" />
+
     <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-98g6-xh36-x2p7" />
   </ItemGroup>
 

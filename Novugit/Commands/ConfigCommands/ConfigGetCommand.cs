@@ -36,7 +36,7 @@ public class ConfigGetSettings : RepoSettings
 [UsedImplicitly]
 public class ConfigGetCommand(IConfiguration config) : Command<ConfigGetSettings>
 {
-  public override int Execute(CommandContext context, ConfigGetSettings settings, CancellationToken cancellationToken)
+  protected override int Execute(CommandContext context, ConfigGetSettings settings, CancellationToken cancellationToken)
   {
     settings.ApplyGlobalOptions();
 
